@@ -9,3 +9,9 @@ p: +/{x-$[x>"a";"`";"&"]}' / priority sum
 c: #'=,/?:' / group and count
 s3a: p@{g:c(2,-2!#x)#x;*(!g)@&.g=2}'
 s3b: {p@{g:c@x;*(!g)@&.g=3}'((-3!#x),3)#x}
+
+p: .'''"-"\''","\'  / parse
+i: {(x>z-1)&y<w+1} / contains in
+r: {x+!1+y-x} / inclusive range
+s4a: +/{i.'(x,y;y,x)}.'p@
+s4b: +/~^{(.#'=,/r.'x)?2}'p@
