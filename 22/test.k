@@ -8,9 +8,10 @@ rslts:(66306 195292
  13526 14204
  8233 2821
  477 830
- "JRVNHHCSJ" "GNFBSBJLH")
+ ("JRVNHHCSJ";"GNFBSBJLH")
+ 1816 2625)
 
 days:#rslts
-checks:rslts=(days,2)#runall@
+checks:rslts~''(days,2)#runall@()
 rpt:{{(d;p):x;"day ",($d)," part ",(`c$"`"+p)}'1++&x}
 $[&/&/'checks;"tests passed";rpt@~checks]
