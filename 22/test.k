@@ -9,7 +9,8 @@ rslts:(66306 195292
  8233 2821
  477 830
  ("JRVNHHCSJ";"GNFBSBJLH")
- 1816 2625)
+ 1816 2625
+ 1427048 2940614)
 
 days:#rslts
 checks:rslts~''(days,2)#runall@()
