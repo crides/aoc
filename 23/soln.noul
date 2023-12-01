@@ -1,0 +1,14 @@
+d1a := (\inp ->
+    inp then lines map (\l -> l search_all(R"\d")) map (\l -> first(l) $ last(l)) map int then sum
+);
+
+d1b := (\inp -> (
+    L := ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
+    inp then lines map (\l -> (
+        front := l search (R"\d|" $ (L join "|"));
+        back := (l search (R".*(\d|" $ (L join "|") $ ").*?$")) !! 1;
+        l = (front .. back) map (\i-> if (i =~ R"\d") i else $((L locate i) + 1)) join "";
+        i := int(l);
+        i
+    )) then sum
+));
