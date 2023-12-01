@@ -1,0 +1,12 @@
+#!/usr/bin/env noulith
+
+usage := (\ -> print(F"Usage: run.noul <day> (a | b) ( test | run )"));
+if (len(argv) != 3 or argv[0] !~ R"^\d$" or not (0 < int(argv[0]) <= 25) or 
+        argv[1] not_in "ab" or argv[2] not_in "test" .. "run") (
+    usage();
+) else (
+    day := int(argv[0]);
+    file := if (argv[2] == "test") ("t" $ day $ argv[1]) else ("i" $ day);
+    import "soln.noul";
+    print(eval(F"d{day}{argv[1]}")(read_file(file)));
+)
