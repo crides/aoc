@@ -1,14 +1,15 @@
 d1a := (\inp ->
-    inp then lines map (\l -> l search_all(R"\d")) map (\l -> first(l) $ last(l)) map int then sum
+    inp then lines map (\l -> l search_all(R"\d")) map (first &&& last) map int then sum
 );
 
 d1b := (\inp -> (
     L := ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
+    fpat := R"\d|" $ (L join "|");
+    bpat := R".*(\d" $ (L map ("|"$) join "") $ ")";
     inp then lines map (\l -> (
-        front := l search (R"\d|" $ (L join "|"));
-        back := (l search (R".*(\d|" $ (L join "|") $ ").*?$")) !! 1;
+        front := l search fpat;
+        back := (l search bpat) !! 1;
         l = (front .. back) map (\i-> if (i =~ R"\d") i else $((L locate i) + 1)) join "";
-        i := int(l);
-        i
+        int(l)
     )) then sum
 ));
