@@ -1,5 +1,5 @@
 d1a := (\inp ->
-    inp then lines map (\l -> l search_all(R"\d")) map (first &&& last) map int then sum
+    inp then lines map (\l -> l search_all(R"\d")) map (\l -> int(l[0] $ l[-1])) then sum
 );
 
 d1b := (\inp -> (
@@ -13,3 +13,18 @@ d1b := (\inp -> (
         int(l)
     )) then sum
 ));
+
+d2p := (\inp -> (
+    col_color := (\c, g -> g map (\s -> (s !? c) coalesce 0) then max);
+    inp then lines
+    map (\l ->
+        l[5:] split ": "
+        then (int *** (\g ->
+            g split "; " map (\s ->
+                s split ", " map (\c ->
+                    c split " " then (int *** id) then reverse) then dict)
+            then ("red"(col_color) &&& "green"(col_color) &&& "blue"(col_color)) )))
+));
+
+d2a := (\inp -> d2p(inp) filter (\p -> all(p[1] zip (12 to 14) with (<))) map first then sum);
+d2b := (\inp -> d2p(inp) map (\p -> product(p[1])) then sum);
