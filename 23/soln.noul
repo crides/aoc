@@ -29,7 +29,7 @@ d2p := (\inp -> (
 d2a := (\inp -> d2p(inp) filter (\p -> all(p[1] zip (12 to 14) with (<))) map first then sum);
 d2b := (\inp -> d2p(inp) map (\p -> product(p[1])) then sum);
 
-d3p := (\inp -> (
+d3p := (\inp, cond -> (
     ls := lines(inp);
     li := (\l -> (
         infs := [];
@@ -43,23 +43,39 @@ d3p := (\inp -> (
             o = i + len(n) + o;
         );
     ));
-    [ls, enumerate(ls) map (\[i, l] -> li(l) map (\inf -> [inf[0], i, inf[1], inf[2]])) then flatten]
+    lis := enumerate(ls) map (\[i, l] -> li(l) map (\inf -> [inf[0], i, inf[1], inf[2]])) then flatten;
+    sli := (\l -> enumerate(list(l)) filter (\p -> cond(p[1])));
+    slis := ls map sli then enumerate map (\[i, infs] -> infs map (\[j, s] -> [i, j])) then flatten;
+    [ls, lis, slis]
 ));
 
 d3a := (\inp -> (
-    ls, lis := d3p(inp);
-    sli := (\l -> enumerate(list(l)) filter (\p -> p[1] != '.' and (p[1] < '0' or p[1] > '9')));
-    slis := ls map sli then enumerate map (\[i, infs] -> infs map (\[j, s] -> [i, j])) then flatten;
+    ls, lis, slis := d3p(inp, (\c -> c != '.' and (c < '0' or c > '9')));
     sis := slis map (\c -> [-1, 0, 1] ^^ 2 map (\o -> vector(c) + vector(o))) then flatten;
     lis filter (\linf -> sis any (\c -> c[0] == linf[1] and linf[2] <= c[1] < linf[3])) map first then sum
 ));
 
 d3b := (\inp -> (
-    ls, lis := d3p(inp);
-    sli := (\l -> enumerate(list(l)) filter (\p -> p[1] == '*'));
-    slis := ls map sli then enumerate map (\[i, infs] -> infs map (\[j, s] -> [i, j])) then flatten;
+    ls, lis, slis := d3p(inp, (== '*'));
     slis map (\sl -> (
         [-1, 0, 1] ^^ 2 map (\o -> vector(sl) + vector(o)) map (\c -> lis filter (\linf -> c[0] == linf[1] and linf[2] <= c[1] < linf[3])) then flatten then set
     ))
     filter (\i -> len(i) == 2) then map (\ns -> ns map first then product) then sum
+));
+
+d4p := (\inp -> (
+    lines(inp) map (\l -> l split ": " then ((\s -> s search R"\d+" then int) *** (\s -> s split " | " map (\g -> g search_all R"\d+" map int))))
+));
+d4a := (\inp -> d4p(inp) map (\l -> floor(2 ^ (len(set(l[1][0]) && set(l[1][1])) - 1))) then sum);
+d4b := (\inp -> (
+    cis := d4p(inp) map (\[i, [w, o]] -> 1 to len(set(w) && set(o)) map (+(i-1)));
+    mult := cis map (const 1);
+    print(cis);
+    for (i, ci <<- cis) (
+        for (j <- ci) (
+            mult[j] += mult[i];
+        )
+    );
+    print(mult);
+    sum(mult)
 ));
