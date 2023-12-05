@@ -103,17 +103,10 @@ d5b := (\inp -> (
                     if ((s + sl) <= b or s >= (b + l)) (
                         new_rest +.= [s, sl];
                     ) else (
-                        if (s < b) (
-                            new_rest +.= [s, b - s];
-                        ) else (
-                            next +.= [s - b + t, min(s + sl, b + l) - s];
-                        );
-                        if ((s + sl) > (b + l)) (
-                            new_rest +.= [b + l, s + sl - b - l];
-                        ) else (
-                            start := max(s, b);
-                            next +.= [start - b + t, s + sl - start];
-                        );
+                        if (s < b)              new_rest +.= [s, b - s];
+                        if ((s + sl) > (b + l)) new_rest +.= [b + l, s + sl - b - l];
+                        ins, ine := max(s, b), min(s + sl, b + l);
+                        next +.= [ins - b + t, ine - ins];
                     );
                 );
                 rest = new_rest;
