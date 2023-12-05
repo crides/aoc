@@ -64,7 +64,7 @@ d3b := (\inp -> (
 ));
 
 d4p := (\inp -> (
-    lines(inp) map (\l -> l split ": " then second then (\s -> s split " | " map (\g -> g search_all R"\d+" then set) then (\[w, o] -> w && o)))
+    lines(inp) map (\l -> l split ": " then second then (\s -> s split " | " map (\g -> g search_all R"\d+" then set) fold &&))
 ));
 d4a := (\inp -> d4p(inp) map (\l -> floor(2 ^ (len(l) - 1))) then sum);
 d4b := (\inp -> (
@@ -92,27 +92,21 @@ d5a := (\inp -> (
 ));
 d5b := (\inp -> (
     seeds, maps := d5p(inp);
-    seeds group= 2;
-    for (m <- maps) (
-        seeds = seeds map (\ir -> (
-            rest := [ir];
-            next := [];
-            for ([t, b, l] <- m) (
-                new_rest := [];
-                for ([s, sl] <- rest) (
+    maps fold (\ss, m -> (
+        ss map (\ir -> (
+            m fold (\[rest, next], [t, b, l] -> (
+                new_rest, new_next := rest map (\[s, sl] -> 
                     if ((s + sl) <= b or s >= (b + l)) (
-                        new_rest +.= [s, sl];
+                        [[[s, sl]], []]
                     ) else (
-                        if (s < b)              new_rest +.= [s, b - s];
-                        if ((s + sl) > (b + l)) new_rest +.= [b + l, s + sl - b - l];
                         ins, ine := max(s, b), min(s + sl, b + l);
-                        next +.= [ins - b + t, ine - ins];
-                    );
-                );
-                rest = new_rest;
-            );
-            rest ++ next
-        )) then flatten then unique;
-    );
-    seeds map first then min
+                        ((if (s < b) [[s, b - s]] else []) ++
+                            (if ((s + sl) > (b + l)) [[b + l, s + sl - b - l]] else [])) ..
+                        [[ins - b + t, ine - ins]]
+                    )
+                ) then transpose map flatten or [[], []];
+                [new_rest, next ++ new_next]
+            )) from [[ir], []] fold ++
+        )) then flatten
+    )) from (seeds group 2) map first then min
 ));
