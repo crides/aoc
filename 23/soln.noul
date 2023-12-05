@@ -64,18 +64,62 @@ d3b := (\inp -> (
 ));
 
 d4p := (\inp -> (
-    lines(inp) map (\l -> l split ": " then ((\s -> s search R"\d+" then int) *** (\s -> s split " | " map (\g -> g search_all R"\d+" map int))))
+    lines(inp) map (\l -> l split ": " then second then (\s -> s split " | " map (\g -> g search_all R"\d+" then set) then (\[w, o] -> w && o)))
 ));
-d4a := (\inp -> d4p(inp) map (\l -> floor(2 ^ (len(set(l[1][0]) && set(l[1][1])) - 1))) then sum);
+d4a := (\inp -> d4p(inp) map (\l -> floor(2 ^ (len(l) - 1))) then sum);
 d4b := (\inp -> (
-    cis := d4p(inp) map (\[i, [w, o]] -> 1 to len(set(w) && set(o)) map (+(i-1)));
+    cis := enumerate(d4p(inp)) map (\[i, l] -> 1 to len(l) map (+i));
     mult := cis map (const 1);
-    print(cis);
-    for (i, ci <<- cis) (
-        for (j <- ci) (
-            mult[j] += mult[i];
-        )
-    );
-    print(mult);
+    for (i, ci <<- cis) for (j <- ci) mult[j] += mult[i];
     sum(mult)
+));
+
+d5p := (\inp -> (
+    ps := inp split "\n\n";
+    seeds := ps[0] split ": " then second split " " map int;
+    maps := ps[1:] map (\m -> lines(m)[1:] map (\l -> l split " " map int));
+    [seeds, maps]
+));
+d5a := (\inp -> (
+    seeds, maps := d5p(inp);
+    for (m <- maps) (
+        seeds = seeds map (\s -> (
+            for ([t, b, l] <- m) if (b <= s < (b + l)) return s - b + t;
+            s
+        ));
+    );
+    min(seeds)
+));
+d5b := (\inp -> (
+    seeds, maps := d5p(inp);
+    seeds group= 2;
+    for (m <- maps) (
+        seeds = seeds map (\ir -> (
+            rest := [ir];
+            next := [];
+            for ([t, b, l] <- m) (
+                new_rest := [];
+                for ([s, sl] <- rest) (
+                    if ((s + sl) <= b or s >= (b + l)) (
+                        new_rest +.= [s, sl];
+                    ) else (
+                        if (s < b) (
+                            new_rest +.= [s, b - s];
+                        ) else (
+                            next +.= [s - b + t, min(s + sl, b + l) - s];
+                        );
+                        if ((s + sl) > (b + l)) (
+                            new_rest +.= [b + l, s + sl - b - l];
+                        ) else (
+                            start := max(s, b);
+                            next +.= [start - b + t, s + sl - start];
+                        );
+                    );
+                );
+                rest = new_rest;
+            );
+            rest ++ next
+        )) then flatten then unique;
+    );
+    seeds map first then min
 ));
