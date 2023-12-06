@@ -110,3 +110,16 @@ d5b := (\inp -> (
         )) then flatten
     )) from (seeds group 2) map first then min
 ));
+
+d6a := (\inp ->
+    lines(inp) map (\l -> l search_all(R"\d+") map int) then transpose
+    map (\[t, dist] -> (1 til t) map (\i -> i * (t - i) > dist) then sum) then product
+);
+# (time - x) * x > dist
+# => time * x - x^2 > dist
+# => x^2 - time * x + dist < 0
+# get roots: (-time +- sqrt(time^2 - 4 * dist)) / 2
+d6b := (\inp -> (
+    tim, dist := lines(inp) map (\l -> l split ": " then second replace R"\s+" with "" then int);
+    ((V(-1, 1) * sqrt(tim ^ 2 - 4 * dist) - tim) / 2 fold - then abs then floor) + 1
+));
