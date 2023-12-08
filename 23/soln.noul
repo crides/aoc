@@ -161,5 +161,5 @@ d8b := (\inp -> (
         )
     ));
     nodes := keys(net) filter (_ ends_with "A");
-    nodes map steps >>> factorize then flatten group_all first map (\g -> g[0][0] * max(g map second)) then product
+    nodes map steps fold lcm
 ));
