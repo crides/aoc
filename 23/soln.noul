@@ -137,3 +137,29 @@ d7b := d7s("J23456789TQKA", \freq -> (
     v := sort(values(freq -. "J"));
     if (len(v) == 0) [5] else v[:-1] +. (v[-1] + freq["J"])
 ));
+
+d8p := (\inp -> (
+    ls := lines(inp);
+    insts := ls[0];
+    net := ls[2:] map (_ replace "[()]" with "" split " = " then (id *** (_ split ", "))) then dict;
+    [insts, net]
+));
+d8a := (\inp -> (
+    insts, net := d8p(inp);
+    node := "AAA";
+    for (i, inst <<- cycle(insts)) (
+        node = net[node][inst == "R"];
+        if (node == "ZZZ") return i + 1;
+    )
+));
+d8b := (\inp -> (
+    insts, net := d8p(inp);
+    steps := (\node -> (
+        for (i, inst <<- cycle(insts)) (
+            node = net[node][inst == "R"];
+            if (node ends_with "Z") return i + 1;
+        )
+    ));
+    nodes := keys(net) filter (_ ends_with "A");
+    nodes map steps >>> factorize then flatten group_all first map (\g -> g[0][0] * max(g map second)) then product
+));
