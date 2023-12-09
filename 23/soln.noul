@@ -163,3 +163,16 @@ d8b := (\inp -> (
     nodes := keys(net) filter (_ ends_with "A");
     nodes map steps fold lcm
 ));
+
+d9p := (\inp ->
+    lines(inp) map (\l -> l split " " map int)
+    map (\seq -> (
+        preds := [seq];
+        while (1) (
+            preds +.= preds[-1] pairwise flip(-);
+            if (preds[-1] all (==0)) return preds;
+        )
+    ))
+);
+d9a := (\inp -> d9p(inp) map (\preds -> preds map last then sum) then sum);
+d9b := (\inp -> d9p(inp) map (\preds -> preds map first then reverse fold (\s, i -> i - s)) then sum);
