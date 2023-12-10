@@ -1,7 +1,7 @@
 #!/usr/bin/env noulith
 
 usage := (\ -> print(F"Usage: run.noul <day> (a | b) ( test | run )"));
-if (len(argv) != 3 or argv[0] !~ R"^\d$" or not (0 < int(argv[0]) <= 25) or 
+if (len(argv) != 3 or argv[0] !~ R"^\d+$" or not (0 < int(argv[0]) <= 25) or 
         argv[1] not_in "ab" or argv[2] not_in "test" .. "run") (
     usage();
 ) else (
