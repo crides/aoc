@@ -177,7 +177,9 @@ d9p := (\inp ->
 d9a := (\inp -> d9p(inp) map (\preds -> preds map last then sum) then sum);
 d9b := (\inp -> d9p(inp) map (\preds -> preds map first then reverse fold (\s, i -> i - s)) then sum);
 
-d10a := (\inp -> (
+d10_off_dirs := {0: V(0, 1), 3: V(1, 0), 2: V(0, -1), 1: V(-1, 0)};
+d10_net_get := (\net, [r, c] -> if (0 <= c < len(net[0]) and 0 <= r < len(net)) net[r][c] else null);
+d10p := (\inp -> (
     net := lines(inp) map (\l -> l map (\c ->
         if (c == "F") {0, 3}
         else if (c == "J") {1, 2}
@@ -188,137 +190,58 @@ d10a := (\inp -> (
         else null
     ));
     start := enumerate(lines(inp)) find (\[i, l] -> (l locate? "S") != null) then (id *** (_ locate "S")) then vector;
-    # print(start);
-    net_get := (\[r, c] -> if (0 <= c < len(net[0]) and 0 <= r < len(net)) net[r][c] else null);
-    dists := net map (\l -> l map const(10000));
-    off_dirs := [[V(0, 1), 0], [V(1, 0), 3], [V(0, -1), 2], [V(-1, 0), 1]];
-    start_dirs := off_dirs filter (\[d, cur_dir] -> (
-        next := net_get(start + d);
+    start_dirs := items(d10_off_dirs) filter (\[cur_dir, off] -> (
+        next := d10_net_get(net, start + off);
         (next != null and ((cur_dir + 2) % 4) in next)
     ));
-    # print(start_dirs);
-    for ([_, start_dir] <- start_dirs) (
-        cur := start;
-        cur_dir := start_dir;
-        dist := 0;
-        while (1) (
-            off := off_dirs find (\[o, d] -> d == cur_dir) then first;
-            next_pos := cur + off;
-            dists[cur[0]][cur[1]] = min(dist, dists[cur[0]][cur[1]]);
-            next := net_get(next_pos);
-            if (next == null) break;
-            # print(cur, next_pos, cur_dir, next);
-            cur_dir = only(list(next -. ((cur_dir + 2) % 4)));
-            cur = next_pos;
-            dist += 1;
-            if (cur == start) break;
-        );
-    );
-    # print(dists);
-    flatten(dists) reject (==10000) then max
-));
-d10print_net := (\n -> print(n map (\l -> l map ($) join("")) join "\n"));
-
-d10b := (\inp -> (
-    mmap := lines(inp);
-    net := lines(inp) map (\l -> l map (\c ->
-        if (c == "F") {0, 3}
-        else if (c == "J") {1, 2}
-        else if (c == "|") {1, 3}
-        else if (c == "-") {0, 2}
-        else if (c == "7") {2, 3}
-        else if (c == "L") {0, 1}
-        else null
-    ));
-    start := enumerate(lines(inp)) find (\[i, l] -> (l locate? "S") != null) then (id *** (_ locate "S")) then vector;
-    # print(start);
-    net_get := (\[r, c] -> if (0 <= c < len(net[0]) and 0 <= r < len(net)) net[r][c] else null);
-    off_dirs := [[V(0, 1), 0], [V(1, 0), 3], [V(0, -1), 2], [V(-1, 0), 1]];
-    start_dirs := off_dirs filter (\[d, cur_dir] -> (
-        next := net_get(start + d);
-        (next != null and ((cur_dir + 2) % 4) in next)
-    ));
-    # print(start_dirs);
-    net[start[0]][start[1]] = start_dirs map second then set;
+    net[start[0]][start[1]] = start_dirs map first then set;
     loop := {};
-    for ([_, start_dir] <- start_dirs) (
-        cur := start;
-        cur_dir := start_dir;
-        while (1) (
-            loop |.= cur;
-            off := off_dirs find (\[o, d] -> d == cur_dir) then first;
-            next_pos := cur + off;
-            next := net_get(next_pos);
-            if (next == null) break;
-            # print(cur, next_pos, cur_dir, next);
-            cur_dir = only(list(next -. ((cur_dir + 2) % 4)));
-            cur = next_pos;
-            if (cur == start) break;
-        );
+    cur := start;
+    cur_dir := start_dirs[0][0];
+    while (1) (
+        loop |.= cur;
+        off := d10_off_dirs[cur_dir];
+        next_pos := cur + off;
+        next := d10_net_get(net, next_pos);
+        cur_dir = only(list(next -. ((cur_dir + 2) % 4)));
+        cur = next_pos;
+        if (cur == start) break;
     );
+    [net, start, start_dirs, loop]
+));
+
+d10a := (\inp -> len(d10p(inp)[3]) // 2);
+d10b := (\inp -> (
+    net, start, start_dirs, loop := d10p(inp);
     rows, cols := len(net), len(net[0]);
-    for (r <- (0 til rows)) (
-        for (c <- (0 til cols)) (
-            if (V(r, c) not_in loop) (
-                net[r][c] = null;
-                mmap[r][c] = ".";
-            )
-        )
-    );
-    print(mmap join "\n");
     seged := net map (\l -> l map const(0));
 
     cur := start;
-    cur_dir := start_dirs[0][1];
-    print(cur, cur_dir);
+    cur_dir := start_dirs[0][0];
     wall := 0;
     while (1) (
-        off := off_dirs find (\[o, d] -> d == cur_dir) then first;
-        cur_tail := only(list(net_get(cur) -. cur_dir));
-        rights := cur_dir iterate (\d -> if (d == cur_tail) break else (d - 1) %% 4);
-        lefts := cur_dir iterate (\d -> if (d == cur_tail) break else (d + 1) %% 4);
-        for (right <- rights) (
-            right_off := off_dirs find (\[o, d] -> d == right) then first;
-            ray := cur + right_off;
-            while (net_get(ray) == null) (
-                if (cur in [V(5, 10), V(5, 14)]) print("right ray", ray);
+        off := d10_off_dirs[cur_dir];
+        cur_tail := only(list(d10_net_get(net, cur) -. cur_dir));
+        rights := cur_dir iterate (\d -> if (d == cur_tail) break else (d - 1) %% 4) map (.. 2);
+        lefts := cur_dir iterate (\d -> if (d == cur_tail) break else (d + 1) %% 4) map (.. 1);
+        for ([dir, mark] <- (rights ++ lefts)) (
+            ray_off := d10_off_dirs[dir];
+            ray := cur + ray_off;
+            while (ray not_in loop or d10_net_get(net, ray) == null) (
                 if (0 <= ray[0] < rows and 0 <= ray[1] < cols) (
-                    seged[ray[0]][ray[1]] = 2;
-                    ray += right_off;
+                    seged[ray[0]][ray[1]] = mark;
+                    ray += ray_off;
                 ) else (
-                    if (wall == 0 or wall == 1) (
-                        wall = 1;
-                    ) else (
-                        print("!!!!!!!!!!!!!!!!!!!!!!!!!");
-                    );
-                    break;
-                )
-            );
-        );
-
-        for (left <- lefts) (
-            left_off := off_dirs find (\[o, d] -> d == left) then first;
-            left_ray := cur + left_off;
-            while (net_get(left_ray) == null) (
-                if (0 <= left_ray[0] < rows and 0 <= left_ray[1] < cols) (
-                    seged[left_ray[0]][left_ray[1]] = 1;
-                    left_ray += left_off;
-                ) else (
-                    if (wall == 0 or wall == 2) (
-                        wall = 2;
-                    ) else (
-                        print("!!!!!!!!!!!!!!!!!!!!!!!!!");
-                    );
+                    wall = mark;
                     break;
                 )
             );
         );
         next_pos := cur + off;
-        next := net_get(next_pos);
+        next := d10_net_get(net, next_pos);
         cur_dir = only(list(next -. ((cur_dir + 2) % 4)));
         cur = next_pos;
         if (cur == start) break;
     );
-    d10print_net(seged);
-    flatten(seged) count (==wall)
+    flatten(seged) count (==(3-wall))
 ));
