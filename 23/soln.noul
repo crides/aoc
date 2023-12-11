@@ -245,3 +245,36 @@ d10b := (\inp -> (
     );
     flatten(seged) count (==(3-wall))
 ));
+
+d11p := (\inp -> (
+    mmap := lines(inp) map (\l -> l map (=="#"));
+    empty_rows := enumerate(mmap) filter (\[i, l] -> l all (== 0)) map first;
+    empty_cols := enumerate(transpose(mmap)) filter (\[i, l] -> l all (== 0)) map first;
+    [mmap, empty_rows, empty_cols]
+));
+d11_find_locs := (\mmap -> 
+    enumerate(mmap) filter (\[r, l] -> l any (== 1)) map (\[r, l] -> (
+        enumerate(l) filter (\[c, p] -> p) map (\[c, p] -> V(r, c))
+    )) then flatten
+);
+d11a := (\inp -> (
+    mmap, empty_rows, empty_cols := d11p(inp);
+    for (r <- reverse(empty_rows)) mmap = mmap[:r] ++ (mmap[r] .* 2) ++ mmap[r + 1:];
+    for (c <- reverse(empty_cols)) mmap = mmap map (\l -> l[:c] ++ (l[c] .* 2) ++ l[c + 1:]);
+    locs := d11_find_locs(mmap);
+    combinations(locs, 2) then map (\[a, b] -> sum(abs(a - b))) then sum
+));
+d11b := (\inp -> (
+    mmap, empty_rows, empty_cols := d11p(inp);
+    empty_rows .= set;
+    empty_cols .= set;
+    locs := d11_find_locs(mmap);
+    dist := (\a, b -> (
+        mmrow := (min &&& max)([a[0], b[0]]);
+        mmcol := (min &&& max)([a[1], b[1]]);
+        erows := len(empty_rows && set((mmrow[0] + 1) til mmrow[1]));
+        ecols := len(empty_cols && set((mmcol[0] + 1) til mmcol[1]));
+        sum(abs(a - b)) + (erows + ecols) * 999999
+    ));
+    combinations(locs, 2) map (\p -> dist(...p)) then sum
+));
