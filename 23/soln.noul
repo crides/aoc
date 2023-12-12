@@ -278,3 +278,33 @@ d11b := (\inp -> (
     ));
     combinations(locs, 2) map (\p -> dist(...p)) then sum
 ));
+
+d12p := (\inp ->
+    lines(inp) map (_ split " " then (_ map ("#?." locate _)) *** (_ split "," map int))
+);
+d12s := (\recs -> (
+    recs map (\[spots, counts] -> (
+        dp := counts map const(spots map const(0));
+        starts := 0 til (len(spots) - counts[0]) filter (\i -> spots[i:i + counts[0]] all (!= 2));
+        for (start <- starts) if (spots[:start] all (!= 0)) dp[0][start + counts[0] - 1] = 1;
+        for (i <- 1 til len(counts)) (
+            for (j <- 0 til (len(spots) - counts[i] + 1)) (
+                prev := 0 til (j - 1) filter (\k -> spots[k + 1:j] all (!= 0)) map (\k -> dp[i - 1][k]) then sum;
+                if (prev > 0 and (j == 0 or spots[j - 1] != 0) and spots[j:j + counts[i]] all (!= 2) and (i < (len(counts) - 1) or spots[j + counts[i]:] all (!= 0))) (
+                    dp[i][j + counts[i] - 1] = prev;
+                )
+            )
+        );
+        sum(dp[-1])
+    )) then sum
+));
+d12a := (\inp -> d12s(d12p(inp)));
+d12b := (\inp -> (
+    recs := d12p(inp);
+    recs = recs map (\[spots, counts] -> (
+        new_spots := flatten((spots +. 0) ** 4) ++ spots;
+        new_counts := counts ** 5;
+        [new_spots, new_counts]
+    ));
+    d12s(recs)
+));
