@@ -285,26 +285,31 @@ d12p := (\inp ->
 d12s := (\recs -> (
     recs map (\[spots, counts] -> (
         dp := counts map const(spots map const(0));
-        starts := 0 til (len(spots) - counts[0]) filter (\i -> spots[i:i + counts[0]] all (!= 2));
-        for (start <- starts) if (spots[:start] all (!= 0)) dp[0][start + counts[0] - 1] = 1;
-        for (i <- 1 til len(counts)) (
-            for (j <- 0 til (len(spots) - counts[i] + 1)) (
-                prev := 0 til (j - 1) filter (\k -> spots[k + 1:j] all (!= 0)) map (\k -> dp[i - 1][k]) then sum;
-                if (prev > 0 and (j == 0 or spots[j - 1] != 0) and spots[j:j + counts[i]] all (!= 2) and (i < (len(counts) - 1) or spots[j + counts[i]:] all (!= 0))) (
-                    dp[i][j + counts[i] - 1] = prev;
+        for (start <- 0 til (len(spots) - counts[0])) (
+            if (spots[start:start + counts[0]] all (!= 2)) dp[0][start + counts[0] - 1] = 1;
+            if (spots[start] == 0) break;
+        );
+        for (i, c <<- counts[1:]) (
+            i += 1;
+            last_start :=
+                if (i < (len(counts) - 1)) 0
+                else (
+                    ((len(spots) - 1) to 0 by (-1) find? (\j -> spots[j] == 0) coalesce (c - 1)) - c + 1
+                );
+            acc := 0;
+            for (j <- (len(spots) - 1) to last_start by (-1)) (
+                acc = if (spots[j] != 2) acc + 1 else 0;
+                if (acc >= c and (j == 0 or spots[j - 1] != 0)) (
+                    prev_start := (j - 2) to 0 by (-1) find? (\k -> spots[k] == 0) coalesce 0;
+                    prev := prev_start til (j - 1) map (\k -> dp[i - 1][k]) then sum;
+                    if (prev > 0) (
+                        dp[i][j + c - 1] = prev;
+                    )
                 )
             )
         );
         sum(dp[-1])
     )) then sum
 ));
-d12a := (\inp -> d12s(d12p(inp)));
-d12b := (\inp -> (
-    recs := d12p(inp);
-    recs = recs map (\[spots, counts] -> (
-        new_spots := flatten((spots +. 0) ** 4) ++ spots;
-        new_counts := counts ** 5;
-        [new_spots, new_counts]
-    ));
-    d12s(recs)
-));
+d12a := d12p >>> d12s;
+d12b := (\inp -> d12s(d12p(inp) map (\spots -> flatten((spots +. 1) ** 4) ++ spots) *** (_ ** 5)));
