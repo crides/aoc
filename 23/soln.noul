@@ -254,7 +254,7 @@ d11p := (\inp -> (
 ));
 d11_find_locs := (\mmap -> 
     enumerate(mmap) filter (\[r, l] -> l any (== 1)) map (\[r, l] -> (
-        enumerate(l) filter (\[c, p] -> p) map (\[c, p] -> V(r, c))
+        enumerate(l) filter second map (\[c, p] -> V(r, c))
     )) then flatten
 );
 d11a := (\inp -> (
@@ -270,8 +270,8 @@ d11b := (\inp -> (
     empty_cols .= set;
     locs := d11_find_locs(mmap);
     dist := (\a, b -> (
-        mmrow := (min &&& max)([a[0], b[0]]);
-        mmcol := (min &&& max)([a[1], b[1]]);
+        mmrow := sort([a[0], b[0]]);
+        mmcol := sort([a[1], b[1]]);
         erows := len(empty_rows && set((mmrow[0] + 1) til mmrow[1]));
         ecols := len(empty_cols && set((mmcol[0] + 1) til mmcol[1]));
         sum(abs(a - b)) + (erows + ecols) * 999999
