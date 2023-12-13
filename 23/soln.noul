@@ -314,3 +314,14 @@ d12s := (\recs -> (
 ));
 d12a := d12p >>> d12s;
 d12b := (\inp -> d12s(d12p(inp) map (\spots -> flatten((spots +. 1) ** 4) ++ spots) *** (_ ** 5)));
+
+d13s := (\find_refl -> \inp -> 
+    inp split "\n\n" map (\pat -> (
+        m := lines(pat);
+        r := find_refl(m);
+        if (r != null) r * 100 else find_refl(transpose(m))
+    )) then sum
+);
+d13a := d13s(\m -> 1 til len(m) find? (\r -> all(reverse(m[:r]) zip m[r:] with ==)));
+d13b := d13s(\m -> 1 til len(m) find? (\r ->
+    sum(reverse(m[:r]) zip m[r:] with (\x, y -> sum(x zip y with !=))) == 1));
