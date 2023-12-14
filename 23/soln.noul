@@ -325,3 +325,33 @@ d13s := (\find_refl -> \inp ->
 d13a := d13s(\m -> 1 til len(m) find? (\r -> all(reverse(m[:r]) zip m[r:] with ==)));
 d13b := d13s(\m -> 1 til len(m) find? (\r ->
     sum(reverse(m[:r]) zip m[r:] with (\x, y -> sum(x zip y with !=))) == 1));
+
+d14_roll := (\m -> (
+    for (r <- 0 til len(m)) (
+        for (c <- 0 til len(m)) (
+            if (m[r][c] == "O") (
+                last_sol := (r - 1) to 0 by (-1) find? (\r' -> m[r'][c] != ".") coalesce -1;
+                if (last_sol != (r - 1)) (
+                    m[last_sol + 1][c] = "O";
+                    m[r][c] = ".";
+                )
+            )
+        )
+    );
+    m
+));
+d14_sup := (\m -> enumerate(reverse(m)) map (\[r, row] -> (row count (== "O")) * (r + 1)) then sum);
+d14a := (\inp -> d14_sup(d14_roll(lines(inp))));
+d14b := (\inp -> (
+    rotate := (\m -> transpose(m) map reverse);
+    spin := (\m -> rotate(d14_roll(rotate(d14_roll(rotate(d14_roll(rotate(d14_roll(m)))))))));
+    m := lines(inp);
+    steps := {};
+    for (i <- iota(0)) (
+        if (m in steps) (
+            period := [1, steps[m]] iterate (+1) *** (steps !!) find (second >>> (m ==)) then first;
+            for (j <- 1 to (1000000000 - i) % period) m = spin(m);
+            return reverse(m) then enumerate map (\[r, row] -> (row count (== "O")) * (r + 1)) then sum;
+        ) else every m, steps[m] = spin(m);
+    );
+));
