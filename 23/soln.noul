@@ -355,3 +355,21 @@ d14b := (\inp -> (
         ) else every m, steps[m] = spin(m);
     );
 ));
+
+d15_hash := (_ fold (\hash, c -> ((hash + ord(c)) * 17) %% 256) from 0);
+d15a := (_ split "," map d15_hash then sum);
+d15b := (\inp -> (
+    boxes := 1 to 256 map const([]);
+    inp split "," map (\s -> (
+        lab, val := s split_re "[-=]";
+        ind := d15_hash(lab);
+        if (val) (
+            loc := boxes[ind] locate? first >>> (== lab);
+            if (loc != null) boxes[ind][loc][1] = val
+            else boxes[ind] +.= [lab, val];
+        ) else boxes[ind] .= (_ reject first >>> (== lab));
+    ));
+    enumerate(boxes) flat_map (\[i, slots] -> 
+        enumerate(slots) map (\[j, [_, v]] -> (i + 1) * (j + 1) * int(v))
+    ) then sum
+));
