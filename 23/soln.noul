@@ -373,3 +373,32 @@ d15b := (\inp -> (
         enumerate(slots) map (\[j, [_, v]] -> (i + 1) * (j + 1) * int(v))
     ) then sum
 ));
+
+d16_lits := (\b, mirs -> (
+    beams, seen := [b], {};
+    while (beams) (
+        beams flat_map= \[p, d] -> (
+            tile := d10_net_get(mirs, p);
+            if (tile != null and [p, d] not_in seen) (
+                seen |.= [p, d];
+                step := \d' -> [p + d10_off_dirs[d'], d'];
+                switch (tile)
+                case "." -> [step(d)]
+                case "|" -> [[1, 3], [d]][d % 2] map step
+                case "-" -> [[d], [0, 2]][d % 2] map step
+                case "/" -> [step((5 - d) %% 4)]
+                case "\\" -> [step((3 - d) %% 4)]
+            ) else []
+        );
+    );
+    seen map first then unique then len
+));
+d16a := (\inp -> d16_lits([V(0, 0), 0], lines(inp)));
+d16b := (\inp -> (
+    mirs := lines(inp);
+    rows, cols := len(mirs), len(mirs[0]);
+    (0 til cols map (\c -> [V(0, c), 3]))
+    ++ (0 til cols map (\c -> [V(rows - 1, c), 1]))
+    ++ (0 til rows map (\r -> [V(r, 0), 0]))
+    ++ (0 til rows map (\r -> [V(r, cols - 1), 2])) map (\s -> d16_lits(s, mirs)) then max
+));
