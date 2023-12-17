@@ -402,3 +402,81 @@ d16b := (\inp -> (
     ++ (0 til rows map (\r -> [V(r, 0), 0]))
     ++ (0 til rows map (\r -> [V(r, cols - 1), 2])) map (\s -> d16_lits(s, mirs)) then max
 ));
+
+d17a := (\inp -> (
+    m := lines(inp) map (_ map int);
+    rows, cols := len(m), len(m[0]);
+    costss := 1 to rows map const(1 to cols map const([]));
+    costss[0][0] = [[0, 0, 0]];
+    viss := [V(0, 0)];
+    while (viss) (
+        new_viss := {};
+        viss each (\[r, c] -> (
+            for ([cost, dir, streak] <- costss[r][c]) (
+                next_dirs := (if (streak < 3) [dir] else []) ++ [(dir - 1) %% 4, (dir + 1) %% 4];
+                for (nd <- next_dirs) (
+                    r', c' := V(r, c) + d10_off_dirs[nd];
+                    npos := V(r', c');
+                    if (0 <= r' < rows and 0 <= c' < cols) (
+                        ncost, nstreak := cost + m[r'][c'], if (nd == dir) streak + 1 else 1;
+                        if (not(costss[r'][c'])) (
+                            costss[r'][c'] = [[ncost, nd, nstreak]];
+                            new_viss |.= npos;
+                        ) else (
+                            same, diff := costss[r'][c'] partition (_[1:]) >>> (== ([nd, nstreak]));
+                            same map= first;
+                            old := if (same == []) 1000000000 else min(same);
+                            same_least := min(same +. ncost);
+                            if (same_least < old) (
+                                new_viss |.= npos;
+                            );
+                            costss[r'][c'] = diff +. [same_least, nd, nstreak];
+                        );
+                    )
+                )
+            )
+        ));
+        viss = new_viss;
+        print(len(viss));
+    );
+    costss[rows - 1][cols - 1] map first then min
+));
+
+d17b := (\inp -> (
+    m := lines(inp) map (_ map int);
+    rows, cols := len(m), len(m[0]);
+    costss := 1 to rows map const(1 to cols map const([]));
+    costss[0][0] = [[0, 0, 0]];
+    viss := [V(0, 0)];
+    while (viss) (
+        new_viss := {};
+        viss each (\[r, c] -> (
+            for ([cost, dir, streak] <- costss[r][c]) (
+                next_dirs := (if (streak < 10) [dir] else []) ++ (if (streak >= 4) [(dir - 1) %% 4, (dir + 1) %% 4] else []);
+                for (nd <- next_dirs) (
+                    r', c' := V(r, c) + d10_off_dirs[nd];
+                    npos := V(r', c');
+                    if (0 <= r' < rows and 0 <= c' < cols) (
+                        ncost, nstreak := cost + m[r'][c'], if (nd == dir) streak + 1 else 1;
+                        if (not(costss[r'][c'])) (
+                            costss[r'][c'] = [[ncost, nd, nstreak]];
+                            new_viss |.= npos;
+                        ) else (
+                            same, diff := costss[r'][c'] partition (_[1:]) >>> (== ([nd, nstreak]));
+                            same map= first;
+                            old := if (same == []) 1000000000 else min(same);
+                            same_least := min(same +. ncost);
+                            if (same_least < old) (
+                                new_viss |.= npos;
+                            );
+                            costss[r'][c'] = diff +. [same_least, nd, nstreak];
+                        );
+                    )
+                )
+            )
+        ));
+        viss = new_viss;
+        print(len(viss));
+    );
+    costss[rows - 1][cols - 1] filter third >>> (>= 4) map first then min
+));
