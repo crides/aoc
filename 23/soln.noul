@@ -443,3 +443,59 @@ d17a := d17s((\dir, streak -> (if (streak < 3) [dir] else []) ++ [(dir - 1) %% 4
             (_ map first then min));
 d17b := d17s((\dir, streak -> (if (streak < 10) [dir] else []) ++ (if (streak >= 4) [(dir - 1) %% 4, (dir + 1) %% 4] else [])),
             (_ filter third >>> (>= 4) map first then min));
+
+d18s := (\insts -> (
+    edges := [];
+    pos := V(0, 0);
+    mins := V(0, 0);
+    rows, cols := 0, 0;
+    for ([dir, steps] <- insts) (
+        end := pos + steps * d10_off_dirs[dir];
+        edges +.= sort([pos, end]);
+        pos = end;
+        mins = mins zip pos with min then vector;
+        rows, cols = [rows, cols] zip pos with max;
+    );
+    edges map= (_ map (_ - mins));
+    vertices := unique(flatten(edges));
+    rows, cols = [rows, cols] zip mins with -;
+    area := 0;
+    r := 0;
+    while (r <= rows) (
+        out := 1;
+        hors := edges filter (\[s, e] -> s[0] == e[0] == r);
+        vers := edges filter (\[s, e] -> s[1] == e[1] and s[0] <= r <= e[0]);
+        pixs := 0;
+        c := 0;
+        while (c <= cols) (
+            hor := hors find? (\[s, e] -> s[1] == c);
+            if (hor != null) (
+                c = hor[1][1] + 1;
+                pixs += hor[1][1] - hor[0][1] + out;
+                sver := vers find (_ any (== (hor[0])));
+                ever := vers find (_ any (== (hor[1])));
+                if ((sver[0] == hor[0]) != (ever[0] == hor[1])) out .= not;
+            ) else (
+                if (vers any (\[s, e] -> s[1] == c)) out .= not;
+                next := vers map (\[s, e] -> s[1]) then sort find? (> c);
+                if (next == null) break
+                else (
+                    if (not out) pixs += next - c + 1;
+                    c = next;
+                );
+            );
+        );
+        if (hors) (
+            area += pixs;
+            r += 1;
+        ) else (
+            next := vertices map first then sort find (> r);
+            area += pixs * (next - r);
+            r = next;
+        );
+    );
+    area
+));
+d18a := \inp -> d18s(lines(inp) map (_ split " " then _[:2] then ("RULD" locate _) *** int));
+d18b := \inp -> d18s(lines(inp) map (_ replace R"^.*\(#" with "" replace R"\)$" with ""
+    then (\n -> [(4 - int(n[5])) %% 4, eval("0x" $ n[:5])])));
