@@ -458,3 +458,67 @@ d18s := (\insts -> (
 d18a := \inp -> d18s(lines(inp) map (_ split " " then _[:2] then ("RULD" locate _) *** int));
 d18b := \inp -> d18s(lines(inp) map (_ replace R"^.*\(#" with "" replace R"\)$" with ""
     then (\n -> [(4 - int(n[5])) %% 4, eval("0x" $ n[:5])])));
+
+d19p := (\inp -> (
+    wfs, parts := inp split "\n\n";
+    wfs = lines(wfs) map (_ replace R"\}$" with "" split "{" then id *** (_ split "," map (\i -> if (":" in i) i split ":" else i))) then dict;
+    parts = lines(parts) map (_ search_all R"\d+" map int);
+    [wfs, parts]
+));
+d19a := (\inp -> (
+    wfs, parts := d19p(inp);
+    score := 0;
+    for (part <- parts) (
+        wf := "in";
+        while (wf not_in "A" .. "R") (
+            for (cond <- wfs[wf]) (
+                if (type(cond) == str) (
+                    wf = cond;
+                    break;
+                ) else (
+                    s, target := cond;
+                    for (i <- 0 til 4) s = s replace ("xmas"[i]) with ($(part[i]));
+                    if (eval(s)) (
+                        wf = target;
+                        break;
+                    );
+                )
+            );
+        );
+        if (wf == "A") score += sum(part);
+    );
+    score
+));
+d19b := (\inp -> (
+    wfs, _ := d19p(inp);
+    sets := [["in", [[1, 4001]] .* 4]];
+    total := 0;
+    while (sets) (
+        new_sets := [];
+        sets each (\[wf, parts] -> (
+            if (wf == "A") total += parts map (_ map (\[s, e] -> e - s) then sum) then product
+            else if (wf != "R") (
+                for (branch <- wfs[wf]) (
+                    if (type(branch) == str) new_sets +.= [branch, parts]
+                    else (
+                        cond, target := branch;
+                        var, ineq, val := cond[0], cond[1], int(cond[2:]);
+                        if (ineq == ">") val += 1;
+                        ind := "xmas" locate var;
+                        partitions := [] .. [];
+                        for ([s, e] <- parts[ind]) (
+                            if (e <= val) partitions[0] +.= [s, e]
+                            else if (s >= val) partitions[1] +.= [s, e]
+                            else partitions = partitions zip [s, val] .. [val, e] with +.;
+                        );
+                        partitions = partitions map (\p -> parts[:ind] ++ [p] ++ parts[ind + 1:]);
+                        new_sets +.= [target, partitions[ineq == ">"]];
+                        parts = partitions[ineq == "<"];
+                    );
+                );
+            );
+        ));
+        sets = new_sets;
+    );
+    total
+));
