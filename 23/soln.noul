@@ -445,15 +445,11 @@ d17b := d17s((\dir, streak -> (if (streak < 10) [dir] else []) ++ (if (streak >=
             (_ filter third >>> (>= 4) map first then min));
 
 d18s := (\insts -> (
-    pos := V(0, 0);
-    area := 1;
-    for ([dir, dist] <- insts) (
-        pos += d10_off_dirs[dir] * dist;
-        if (dir % 2 == 0) area += (dir - 1) * pos[0] * dist;
-    );
-    area .= abs;
-    for ([dir, dist] <- insts) area += dist / 2;
-    area
+    (insts fold (\[pos, area], [dir, dist] -> [
+        pos + d10_off_dirs[dir] * dist,
+        area + (dir - 1) % 2 * pos[0] * dist
+    ]) from [V(0, 0), 1] then second then abs)
+    + (insts map second then sum) / 2
 ));
 d18a := \inp -> d18s(lines(inp) map (_ split " " then _[:2] then ("RULD" locate _) *** int));
 d18b := \inp -> d18s(lines(inp) map (_ replace R"^.*\(#" with "" replace R"\)$" with ""
