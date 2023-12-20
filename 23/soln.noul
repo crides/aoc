@@ -518,3 +518,78 @@ d19b := (\inp -> (
     );
     total
 ));
+
+d20p := (\inp -> (
+    sys := lines(inp) map (_ split " -> " then (\def -> [def[0], def[1:]]) *** (_ split ", "));
+    defs := sys map (\[[ty, nam], outs] -> [nam, [ty, outs]]) then dict;
+    oimap := sys flat_map (\[[ty, nam], outs] -> outs map (nam .. _)) group_all second map (\g -> [g[0][1], g map first]) then dict;
+    mem := sys map (\[[ty, nam], outs] ->
+        [nam, 
+        switch (ty) 
+        case "b" -> null
+        case "%" -> 0
+        case "&" -> oimap[nam] map (.. 0) then dict
+        ]
+    ) then dict;
+    [defs, mem, oimap]
+));
+d20a := (\inp -> (
+    defs, mem, _ := d20p(inp);
+    total := V(0, 0);
+    for (i <- 0 til 1000) (
+        evs := [["", "roadcaster", 0]];
+        counts := V(0, 0);
+        orig := mem;
+        while (evs) (
+            new_evs := [];
+            for ([frm, nam, pulse] <- evs) (
+                counts[pulse] += 1;
+                ty, outs := defs !? nam coalesce continue;
+                switch (ty)
+                case "b" -> (new_evs ++= outs map [nam, _, pulse])
+                case "%" -> if (not pulse) (
+                    mem[nam] .= not;
+                    new_evs ++= outs map [nam, _, mem[nam]];
+                )
+                case "&" -> (
+                    mem[nam][frm] = pulse;
+                    res := not(all(values(mem[nam])));
+                    new_evs ++= outs map [nam, _, res];
+                )
+            );
+            evs = new_evs;
+        );
+        total += counts;
+    );
+    total[0] * total[1]
+));
+d20b := (\inp -> (
+    defs, mem, oimap := d20p(inp);
+    fin_ins := keys(mem[oimap["rx"][0]]);
+    counts := {};
+    for (i <- iota(1)) (
+        evs := [["", "roadcaster", 0]];
+        while (evs) (
+            new_evs := [];
+            for ([frm, nam, pulse] <- evs) (
+                if (frm in fin_ins and pulse) (
+                    if (frm not_in counts) counts[frm] = i;
+                    if (fin_ins all (in counts)) return values(counts) fold lcm;
+                );
+                ty, outs := defs !? nam coalesce continue;
+                switch (ty)
+                case "b" -> (new_evs ++= outs map [nam, _, pulse])
+                case "%" -> if (not pulse) (
+                    mem[nam] .= not;
+                    new_evs ++= outs map [nam, _, mem[nam]];
+                )
+                case "&" -> (
+                    mem[nam][frm] = pulse;
+                    res := not(all(values(mem[nam])));
+                    new_evs ++= outs map [nam, _, res];
+                )
+            );
+            evs = new_evs;
+        );
+    );
+));
