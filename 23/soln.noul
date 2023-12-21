@@ -593,3 +593,78 @@ d20b := (\inp -> (
         );
     );
 ));
+
+d21a := (\inp -> (
+    m := lines(inp);
+    rows := len(m);
+    steped := m;
+    mid := rows // 2;
+    steped[mid][mid] = "O";
+    for (i <- 1 to 64) (
+        new_steped := m;
+        for ([p, _] <- enumerate(steped) flat_map (\[r, l] -> enumerate(l) map (\[c, t] -> [V(r, c), t])) filter second >>> (== "O")) (
+            for (o <- d10_off_dirs) (
+                np := p + o;
+                if (0 <= np[0] < rows and 0 <= np[1] < rows and m[np[0]][np[1]] != "#") (
+                    new_steped[np[0]][np[1]] = "O";
+                )
+            );
+        );
+        steped = new_steped;
+    );
+    sum(steped map (_ count (== "O")))
+));
+d21b := (\inp -> (
+    m := lines(inp);
+    rows := len(m);
+    m = (m map (_ $* 3)) ** 3;
+    steps := 26501365;
+    steped := m;
+    mid := rows // 2;
+    steped[mid + rows][mid + rows] = "O";
+    nine := 0;
+    countss := [];
+    for (i <- iota(0)) (
+        new_steped := m;
+        for ([p, _] <- enumerate(steped) flat_map (\[r, l] -> enumerate(l) filter second >>> (== "O") map (\[c, t] -> [V(r, c), t]))) (
+            for (o <- d10_off_dirs) (
+                np := p + o;
+                if (0 <= np[0] < rows * 3 and 0 <= np[1] < rows * 3 and m[np[0]][np[1]] != "#") (
+                    new_steped[np[0]][np[1]] = "O";
+                )
+            );
+        );
+        steped = new_steped;
+        counts := 0 til 3 map (\r -> (
+            0 til 3 map (\c -> (
+                r * rows til (r + 1) * rows map (\r' -> (c * rows til (c + 1) * rows) count (\c' -> steped[r'][c'] == "O")) then sum
+            ))
+        ));
+        countss +.= counts;
+        if (i % 2 == steps % 2) (
+            new := sum(flatten(countss[-1]));
+            if (new == nine) break;
+            nine = new;
+            print(nine);
+        );
+    );
+    json_encode(countss) write_file "countss.json";
+    mul := floor((steps - mid) // rows) - 1;
+    mids := (mul * 2 + 1) + mul * 2 * mul;
+    mids *= countss[-1][1][1];
+    rest := enumerate(d10_off_dirs) map (\[o, off] -> (
+        tip_off := steps - rows * (mul + 1);
+        home_off := steps - rows * mul;
+        sc_off := steps - rows * mul;
+        bc_off := steps - rows * (mul - 1);
+        [[1, tip_off, V(1, 1) + off],
+        [1, home_off, V(1, 1) + off],
+        [mul, sc_off, V(1, 1) + off + d10_off_dirs !% (o + 1)],
+        [(mul + 1), bc_off, V(1, 1) + off + d10_off_dirs !% (o + 1)]]
+        map (\[mul', off', inds] -> (
+            print(mul', off', inds);
+            mul' * countss[off'][inds[0]][inds[1]]
+        )) then sum
+    )) then sum;
+    rest + mids
+));
