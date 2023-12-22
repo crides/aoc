@@ -668,3 +668,34 @@ d21b := (\inp -> (
     )) then sum;
     rest + mids
 ));
+
+d22_sim := (\bs, dims, rem -> (
+    bs = bs sort (<=> on (\b -> max(b map third)));
+    hmap := dims[0] *. (dims[1] *. 0);
+    res := enumerate(bs) reject first >>> (== rem) map (\[_, [ss, es]] -> (
+        xy := (ss[0] to es[0]) ** (ss[1] to es[1]);
+        minh := (xy map (\[x, y] -> hmap[x][y]) then max) + 1;
+        maxh := minh + es[2] - ss[2];
+        falls := minh != ss[2];
+        (if (falls) (
+            xy each (\[x, y] -> (hmap[x][y] = maxh));
+            [ss[:2] +. minh, es[:2] +. maxh]
+        ) else (
+            [ss, es]
+        )) .. falls
+    ));
+    transpose(res) then id *** sum
+));
+d22p := (\inp -> (
+    bs := lines(inp) map (_ split "~" map (_ split "," map int));
+    dims := transpose(flatten(bs)) map max >>> (+1);
+    [first(d22_sim(bs, dims, null)), dims]
+));
+d22a := (\inp -> (
+    fall, dims := d22p(inp);
+    0 til len(fall) count \i -> second(d22_sim(fall, dims, i)) == 0
+));
+d22b := (\inp -> (
+    fall, dims := d22p(inp);
+    0 til len(fall) sum \i -> second(d22_sim(fall, dims, i))
+));
