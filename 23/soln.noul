@@ -700,21 +700,20 @@ d22b := (\inp -> (
     0 til len(fall) sum \i -> second(d22_sim(fall, dims, i))
 ));
 
-d23s := (\part, inp -> (
+d23a := (\inp -> (
     m := lines(inp);
     visited := m map (_ map const(0));
-    start := V(0, m[0] locate ".");
-    edges := [start];
-    rows := len(m);
-    visited[0][start[1]] = 1;
-    expl := (\part', p, vis, dist -> (
+    edges := [V(1, 1)];
+    last_row := len(m) - 1;
+    visited[0][1] = 1;
+    expl := (\p, vis, dist -> (
         while (1) (
             vis[p[0]][p[1]] = 1;
             dist += 1;
-            if (p[0] == rows - 1) return dist;
+            if (p[0] == last_row) return dist;
             nexts := [];
             dir := ">^<v" locate? d10_net_get(m, p);
-            if (part' == 1 and dir != null) (
+            if (dir != null) (
                 n := p + d10_off_dirs[dir];
                 if (not(d10_net_get(vis, n))) nexts +.= n;
             ) else (
@@ -724,27 +723,23 @@ d23s := (\part, inp -> (
                     if (tile != null and tile != "#" and not(d10_net_get(vis, next))) nexts +.= next;
                 );
             );
-            if (len(nexts) > 1) return max(nexts par_map (\next' -> expl(part', next', vis, dist)));
+            if (len(nexts) > 1) return max(nexts par_map (\next' -> expl(next', vis, dist)));
             if (not(nexts)) return 0;
             p = nexts[0];
         );
     ));
-    expl(part, V(1, 1), visited, 0)
+    expl(V(1, 1), visited, 0)
 ));
-d23a := 1(d23s);
 d23b := (\inp -> (
     m := lines(inp);
-    visited := {};
-    start := V(0, m[0] locate ".");
-    heads := [[start, start]];
-    rows := len(m);
-    edges := [];
+    heads := [[V(1, 1), V(0, 1)]];
+    last_row := len(m) - 1;
+    edges, visited := [], {};
     while (heads) (
         pos, prev := pop heads;
-        head := prev;
-        dist := 1;
+        head, dist := prev, 1;
         while (1) (
-            if (pos[0] == rows - 1) (
+            if (pos[0] == last_row) (
                 edges +.= [head, pos, dist];
                 break;
             );
@@ -764,16 +759,10 @@ d23b := (\inp -> (
         );
     );
     adjs := (edges map uncons) ++ (edges map (\e -> [e[1], [e[0], e[2]]])) group_all first map (\g -> [g[0][0], unique(g map second)]) then dict;
-    print(len(adjs), (values(adjs) sum len) / 2);
-    print(unlines(items(adjs) map \[k, v] -> F"{k} => {v join ', '}"));
     expl := (\pos, vis, dist -> (
-        nexts := adjs[pos] reject first >>> (in vis);
-        # print(pos, nexts, vis, dist);
-        dists := nexts par_map (\[p, d] -> expl(p, vis +. pos, dist + 1 + d));
-        if (dists) max(dists) else (
-            if (pos[0] == rows - 1) dist
-            else 0
-        )
+        dists := adjs[pos] reject first >>> (in vis) par_map (\[p, d] -> expl(p, vis +. pos, dist + 1 + d));
+        if (dists) max(dists) else if (pos[0] == last_row) dist else 0
     ));
-    expl(start, [], 0)
+    first_edge := adjs[V(0, 1)][0];
+    expl(first_edge[0], [], first_edge[1])
 ));
