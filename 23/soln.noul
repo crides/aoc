@@ -732,4 +732,48 @@ d23s := (\part, inp -> (
     expl(part, V(1, 1), visited, 0)
 ));
 d23a := 1(d23s);
-d23b := 2(d23s);
+d23b := (\inp -> (
+    m := lines(inp);
+    visited := {};
+    start := V(0, m[0] locate ".");
+    heads := [[start, start]];
+    rows := len(m);
+    edges := [];
+    while (heads) (
+        pos, prev := pop heads;
+        head := prev;
+        dist := 1;
+        while (1) (
+            if (pos[0] == rows - 1) (
+                edges +.= [head, pos, dist];
+                break;
+            );
+            nexts := d10_off_dirs map (+pos) filter (\p -> p != prev and null != d10_net_get(m, p) != "#");
+            if (len(nexts) > 1) (
+                if (pos not_in visited) (
+                    heads ++= nexts map (.. pos);
+                    visited |.= pos;
+                );
+                edges +.= [head, pos, dist - 1];
+                break;
+            ) else (
+                prev = pos;
+                pos = nexts[0];
+                dist += 1;
+            )
+        );
+    );
+    adjs := (edges map uncons) ++ (edges map (\e -> [e[1], [e[0], e[2]]])) group_all first map (\g -> [g[0][0], unique(g map second)]) then dict;
+    print(len(adjs), (values(adjs) sum len) / 2);
+    print(unlines(items(adjs) map \[k, v] -> F"{k} => {v join ', '}"));
+    expl := (\pos, vis, dist -> (
+        nexts := adjs[pos] reject first >>> (in vis);
+        # print(pos, nexts, vis, dist);
+        dists := nexts par_map (\[p, d] -> expl(p, vis +. pos, dist + 1 + d));
+        if (dists) max(dists) else (
+            if (pos[0] == rows - 1) dist
+            else 0
+        )
+    ));
+    expl(start, [], 0)
+));
