@@ -699,3 +699,37 @@ d22b := (\inp -> (
     fall, dims := d22p(inp);
     0 til len(fall) sum \i -> second(d22_sim(fall, dims, i))
 ));
+
+d23s := (\part, inp -> (
+    m := lines(inp);
+    visited := m map (_ map const(0));
+    start := V(0, m[0] locate ".");
+    edges := [start];
+    rows := len(m);
+    visited[0][start[1]] = 1;
+    expl := (\part', p, vis, dist -> (
+        while (1) (
+            vis[p[0]][p[1]] = 1;
+            dist += 1;
+            if (p[0] == rows - 1) return dist;
+            nexts := [];
+            dir := ">^<v" locate? d10_net_get(m, p);
+            if (part' == 1 and dir != null) (
+                n := p + d10_off_dirs[dir];
+                if (not(d10_net_get(vis, n))) nexts +.= n;
+            ) else (
+                for (o, off <<- d10_off_dirs) (
+                    next := p + off;
+                    tile := d10_net_get(m, next);
+                    if (tile != null and tile != "#" and not(d10_net_get(vis, next))) nexts +.= next;
+                );
+            );
+            if (len(nexts) > 1) return max(nexts par_map (\next' -> expl(part', next', vis, dist)));
+            if (not(nexts)) return 0;
+            p = nexts[0];
+        );
+    ));
+    expl(part, V(1, 1), visited, 0)
+));
+d23a := 1(d23s);
+d23b := 2(d23s);
