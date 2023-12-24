@@ -737,3 +737,32 @@ d23b := (\inp -> (
     first_edge := adjs[V(0, 1)][0];
     expl(first_edge[0], [], first_edge[1])
 ));
+
+d24a := (\inp -> (
+    stones := lines(inp) map (_ split_re " @ +" map (_ split_re ", +" map int));
+    collide := (\va, a, vb, b -> (
+        ma, mb := va[1] / va[0], vb[1] / vb[0];
+        oa, ob := a[1] - a[0] * ma, b[1] - b[0] * mb;
+        x := (ob - oa) / (ma - mb);
+        y := ma * x + oa;
+        p := V(x, y);
+        flatten([list((p - a) / va), list((p - b) / vb)]) all (>= 0) and 
+        [x, y] all (200000000000000 <= _ <= 400000000000000)
+        # [x, y] all (7 <= _ <= 27)
+    ));
+    stones map (\[p, v] -> [vector(p[:2]), vector(v[:2])]) combinations 2 count (\[[a, va], [b, vb]] -> collide(va, a, vb, b))
+));
+d24b := (\inp -> (
+    stones := lines(inp) map (_ split_re " @ +" map (_ split_re ", +" map int));
+    eqs := enumerate(stones) map (\[i, [p, v]] -> (
+        enumerate(p) zip v with (\[j, p'], v' -> F"{v'} * t{i} + {p'} == v{'xyz'[j]} * t{i} + {'xyz'[j]}, ") join ""
+    )) join "\n";
+    def_ints := (\idents -> (idents join ", ") $ ' = Ints("' $ (idents join " ") $ '")\n');
+
+    "from z3 import *\n"
+    $ def_ints("xyz" flat_map (\i -> [i, "v" $ i]))
+    $ def_ints(0 til len(stones) map (\i -> "t" $ i))
+    $ "s = Solver()\ns.add(\n" $ eqs $ ")\ns.check()\nprint(s.model().eval(x + y + z))"
+    write_file "d24.py";
+    trim(utf8_decode(run_process("python3", ["d24.py"])))
+));
