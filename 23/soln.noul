@@ -178,7 +178,7 @@ d9a := (\inp -> d9p(inp) map (\preds -> preds map last then sum) then sum);
 d9b := (\inp -> d9p(inp) map (\preds -> preds map first then reverse fold (\s, i -> i - s)) then sum);
 
 d10_off_dirs := [V(0, 1), V(-1, 0), V(0, -1), V(1, 0)];
-d10_net_get := (\net, [r, c] -> if (0 <= c < len(net[0]) and 0 <= r < len(net)) net[r][c] else null);
+d10_net_get := (\net, [r, c] -> (net !? r coalesce return) !? c);
 d10p := (\inp -> (
     net := lines(inp) map (_ map (\c ->
         switch (c)
@@ -194,57 +194,28 @@ d10p := (\inp -> (
     start_dirs := enumerate(d10_off_dirs) filter (\[cur_dir, off] -> (
         next := d10_net_get(net, start + off);
         (next != null and ((cur_dir + 2) % 4) in next)
-    ));
-    net[start[0]][start[1]] = start_dirs map first then set;
-    loop := {};
-    cur := start;
-    cur_dir := start_dirs[0][0];
-    while (1) (
-        loop |.= cur;
-        off := d10_off_dirs[cur_dir];
-        next_pos := cur + off;
-        next := d10_net_get(net, next_pos);
-        cur_dir = only(list(next -. ((cur_dir + 2) % 4)));
-        cur = next_pos;
-        if (cur == start) break;
-    );
-    [net, start, start_dirs, loop]
+    )) map first;
+    net[start[0]][start[1]] = start_dirs then set;
+    [net, start, start_dirs[0]]
 ));
-
-d10a := (\inp -> len(d10p(inp)[3]) // 2);
-d10b := (\inp -> (
-    net, start, start_dirs, loop := d10p(inp);
-    rows, cols := len(net), len(net[0]);
-    seged := net map (\l -> l map const(0));
-
+d10a := (\inp -> (
+    net, start, cur_dir := d10p(inp);
     cur := start;
-    cur_dir := start_dirs[0][0];
-    wall := 0;
-    while (1) (
-        off := d10_off_dirs[cur_dir];
-        cur_tail := only(list(d10_net_get(net, cur) -. cur_dir));
-        rights := cur_dir iterate (\d -> if (d == cur_tail) break else (d - 1) %% 4) map (.. 2);
-        lefts := cur_dir iterate (\d -> if (d == cur_tail) break else (d + 1) %% 4) map (.. 1);
-        for ([dir, mark] <- (rights ++ lefts)) (
-            ray_off := d10_off_dirs[dir];
-            ray := cur + ray_off;
-            while (ray not_in loop or d10_net_get(net, ray) == null) (
-                if (0 <= ray[0] < rows and 0 <= ray[1] < cols) (
-                    seged[ray[0]][ray[1]] = mark;
-                    ray += ray_off;
-                ) else (
-                    wall = mark;
-                    break;
-                )
-            );
-        );
-        next_pos := cur + off;
-        next := d10_net_get(net, next_pos);
-        cur_dir = only(list(next -. ((cur_dir + 2) % 4)));
-        cur = next_pos;
-        if (cur == start) break;
+    for (peri <- iota(1)) (
+        cur += d10_off_dirs[cur_dir];
+        cur_dir = only(list(d10_net_get(net, cur) -. ((cur_dir + 2) % 4)));
+        if (cur == start) return peri / 2;
     );
-    flatten(seged) count (==(3-wall))
+));
+d10b := (\inp -> (
+    net, start, cur_dir := d10p(inp);
+    cur, area := start, 0;
+    for (peri <- iota(1)) (
+        cur += d10_off_dirs[cur_dir];
+        area += (cur_dir - 1) % 2 * cur[0];
+        cur_dir = only(list(d10_net_get(net, cur) -. ((cur_dir + 2) % 4)));
+        if (cur == start) return abs(area) + 1 - peri / 2;
+    );
 ));
 
 d11p := (\inp -> (
