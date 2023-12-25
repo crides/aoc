@@ -766,3 +766,25 @@ d24b := (\inp -> (
     write_file "d24.py";
     trim(utf8_decode(run_process("python3", ["d24.py"])))
 ));
+
+d25a := (\inp -> (
+    adjs := lines(inp) flat_map (_ split ": " then (\[a, xs] -> xs split(" ") map (\x -> {a, x}))) then unique;
+    "graph test {\n" $
+    (adjs map (\[a, b] -> F"{a} -- {b};\n") join "") $
+    "}\n" write_file "test.dot";
+    run_process("sfdp", ["-Tsvg", "test.dot"]) write_file "test.svg";
+    run_process("xdg-open", ["test.svg"]);
+    rm := set(trim(input("Edges to remove (a b | ...): ")) split " | " map (_ split " ") >>> set);
+    parted := list(set(adjs) -- rm);
+    parted = parted map list flat_map id &&& reverse group_all first map (\g -> [g[0][0], set(g map second)]) then dict;
+    whole := keys(parted);
+    nodes := list(list(rm)[0])[:1];
+    one := {nodes[0]};
+    while (nodes) (
+        n := pop nodes;
+        nodes ++= list(parted[n] -- one);
+        one = one || parted[n];
+        nodes .= unique;
+    );
+    len(one) * (len(whole) - len(one))
+));
