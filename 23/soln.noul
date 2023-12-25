@@ -597,66 +597,18 @@ d21a := (\inp -> (
 d21b := (\inp -> (
     m := lines(inp);
     rows := len(m);
-    init_mul := 5;
-    m = (m map (_ $* init_mul)) ** init_mul;
-    steps := 26501365 - 1;
-    steped := m;
-    plot_mid := rows // 2;
-    init_mid := plot_mid + (init_mul // 2) * rows;
-    steped[init_mid][init_mid] = "O";
-    nine := 0;
-    cached_file := F"countss_x{init_mul}.json";
-    cached := read_file?(cached_file);
-    countss := if (cached == null) (
-        countss_ := [];
-        for (i <- iota(1)) (
-            new_steped := m;
-            (enumerate(steped) flat_map (\[r, l] -> enumerate(l) filter second >>> (== "O") map (\[c, t] -> [V(r, c), t]))) par_each (\[p, _] -> (
-                for (o <- d10_off_dirs) (
-                    np := p + o;
-                    if (0 <= np[0] < rows * init_mul and 0 <= np[1] < rows * init_mul and m[np[0]][np[1]] != "#") (
-                        new_steped[np[0]][np[1]] = "O";
-                    )
-                );
-            ));
-            steped = new_steped;
-            counts := 0 til init_mul map (\r -> (
-                0 til init_mul map (\c -> (
-                    r * rows til (r + 1) * rows map (\r' -> (c * rows til (c + 1) * rows) count (\c' -> steped[r'][c'] == "O")) then sum
-                ))
-            ));
-            countss_ +.= counts;
-            if (i % 2 == steps % 2) (
-                new := sum(flatten(counts));
-                if (new == nine) break;
-                nine = new;
-            );
-            print(i);
-        );
-        json_encode(countss_) write_file cached_file;
-    ) else (
-        json_decode(cached)
+    mid := rows // 2;
+    vis := {V(mid, mid): 0};
+    for (i <- iota(0)) (
+        new_edge := items(vis) filter second >>> (== i) flat_map (\[e, _] -> d10_off_dirs map (+e) filter (\p -> null != d10_net_get(m, p) != "#"));
+        if (new_edge all in(vis)) break;
+        vis = dict(new_edge map (.. (i + 1))) || vis;
     );
-    mul := (steps + 1 - plot_mid) // rows - 1;
-    print(mul);
-
-    clen := len(countss);
-    last_even := if (clen % 2 == 0) -3 else -2;
-    even_odd := countss[-3:][:2] map (\c -> c[2][2]);
-    steps_odd := steps % 2 == 0;
-    mids := even_odd[not(steps_odd)] + (1 to mul sum (\i -> 4 * i * even_odd[(i + not(steps_odd)) % 2]));
-    rest := enumerate(d10_off_dirs) map (\[o, off] -> (
-        print(o);
-        [[1, steps - rows * mul, V(2, 2) + 2 * off],                                # tip
-        [1, steps - rows * (mul - 1), V(2, 2) + 2 * off],                           # "home"
-        [mul + 1, steps - rows * mul, V(2, 2) + off + d10_off_dirs !% (o + 1)],     # small corner
-        [mul, steps - rows * (mul - 1), V(2, 2) + off + d10_off_dirs !% (o + 1)]]   # big corner
-        map (\[mul', off', inds] -> (
-            print(mul', off', inds, countss[off'][inds[0]][inds[1]]);
-            mul' * countss[off'][inds[0]][inds[1]]
-        )) then sum
-    )) then sum;
-    rest + mids
+    mul := (26501365 - mid) // rows;
+    ev_od := items(vis) partition second >>> (\d -> d % 2 == 0);
+    ecor, ocor := ev_od map (_ count second >>> (> 65));
+    eful, oful := ev_od map len;
+    (mul + 1) ^ 2 * oful + mul ^ 2 * eful - (mul + 1) * ocor + mul * ecor
 ));
 
 d22_sim := (\bs, dims, rem -> (
