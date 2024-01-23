@@ -16,3 +16,10 @@ d3_off_dirs := [V(0, 1), V(-1, 0), V(0, -1), V(1, 0)];
 d3_poss := \inp -> unique(inp scan (\p, c -> p + d3_off_dirs[">^<v" locate c]) from V(0, 0));
 d3a := d3_poss >>> len;
 d3b := \inp -> len(unique(enumerate(inp) partition first >>> even map map(second) flat_map d3_poss));
+
+d4s := \s -> \inp -> iota(0) lazy_map (\i -> hex_encode(md5(bytes(inp $ i)))) locate starts_with(s);
+d4a := d4s("00000");
+d4b := d4s("000000");
+
+d5a := \inp -> lines(inp) count \l -> (l count in("aeiou")) >= 3 and l window 2 any (\[x, y] -> x == y) and ["ab", "cd", "pq", "xy"] all not_in(l);
+d5b := \inp -> lines(inp) count \l -> enumerate(l window 2) group_all second any (_ map first combinations 2 any (\[x, y] -> abs(x - y) >= 2)) and l window 3 any (\[x, y, z] -> x == z);
