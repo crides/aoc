@@ -1,0 +1,18 @@
+d1a := \inp -> (inp count "(") * 2 - len(inp);
+d1b := \inp -> (inp scan (\a, x -> a + (if (x == "(") 1 else -1)) from 0) locate (-1);
+
+d2a := \inp -> lines(inp) map (\l -> (
+    x, y, z := l split("x") map int;
+    as := sort([x * y, y * z, x * z]);
+    as[0] * 3 + 2 * sum(as[1:])
+)) then sum;
+d2b := \inp -> lines(inp) map (\l -> (
+    sides := sort(l split("x") map int);
+    2 * sum(sides[:2]) + product(sides)
+)) then sum;
+
+dbg := \v -> (print(v); v);
+d3_off_dirs := [V(0, 1), V(-1, 0), V(0, -1), V(1, 0)];
+d3_poss := \inp -> unique(inp scan (\p, c -> p + d3_off_dirs[">^<v" locate c]) from V(0, 0));
+d3a := d3_poss >>> len;
+d3b := \inp -> len(unique(enumerate(inp) partition first >>> even map map(second) flat_map d3_poss));
