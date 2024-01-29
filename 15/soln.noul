@@ -1,3 +1,5 @@
+dbg := \x -> (print(x); x);
+
 d1a := \inp -> (inp count "(") * 2 - len(inp);
 d1b := \inp -> (inp scan (\a, x -> a + (if (x == "(") 1 else -1)) from 0) locate (-1);
 
@@ -11,7 +13,6 @@ d2b := \inp -> lines(inp) map (\l -> (
     2 * sum(sides[:2]) + product(sides)
 )) then sum;
 
-dbg := \v -> (print(v); v);
 d3_off_dirs := [V(0, 1), V(-1, 0), V(0, -1), V(1, 0)];
 d3_poss := \inp -> unique(inp scan (\p, c -> p + d3_off_dirs[">^<v" locate c]) from V(0, 0));
 d3a := d3_poss >>> len;
@@ -74,3 +75,6 @@ d7b := \inp -> (
     a := d7r(circ)["a"];
     d7r((circ reject (\c -> c[1] == "b")) +. (str(a) .. "b"))["a"]
 );
+
+d8a := \inp -> sum(lines(inp) map \l -> len(l) - len(list(eval(l))));
+d8b := \inp -> sum(lines(inp) map \l -> 2 + (l count in('\\"')));
