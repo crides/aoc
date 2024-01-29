@@ -48,3 +48,29 @@ d6b := \inp -> (
         acc
     )) from ((0 .* 1000) .* 1000) map sum then sum
 );
+
+d7_cap := \e -> e split " " filter (=~ R"^[a-z]+$");
+d7r := \circ -> (
+    LSHIFT, RSHIFT, OR, NOT, AND := (<<), (>>), (|), (~), (&);
+    m := {};
+    while ("a" not_in m) (
+        circ = circ reject (\[e, v] -> (
+            cap := d7_cap(e);
+            ev := cap all in(m);
+            if (ev) (
+                for (c <- cap) e = e replace c with str(m[c]);
+                m[v] = eval(e) & 0xFFFF;
+            );
+            ev
+        ))
+    );
+    m
+);
+d7a := \inp -> (
+    d7r(lines(inp) map split(" -> "))["a"]
+);
+d7b := \inp -> (
+    circ := lines(inp) map split(" -> ");
+    a := d7r(circ)["a"];
+    d7r((circ reject (\c -> c[1] == "b")) +. (str(a) .. "b"))["a"]
+);
