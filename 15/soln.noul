@@ -23,3 +23,28 @@ d4b := d4s("000000");
 
 d5a := \inp -> lines(inp) count \l -> (l count in("aeiou")) >= 3 and l window 2 any (\[x, y] -> x == y) and ["ab", "cd", "pq", "xy"] all not_in(l);
 d5b := \inp -> lines(inp) count \l -> enumerate(l window 2) group_all second any (_ map first combinations 2 any (\[x, y] -> abs(x - y) >= 2)) and l window 3 any (\[x, y, z] -> x == z);
+
+d6a := \inp -> (
+    lines(inp) fold (\acc, l -> (
+        end, _, start, inst := l rsplit " " by 4;
+        start .= (_ split ",") >>> map(int);
+        end .= (_ split ",") >>> map(int);
+        switch (len(inst)) 
+        case 6 -> for (i <- start[0] to end[0]; j <- start[1] to end[1]) acc[i][j] .= not
+        case 7 -> for (i <- start[0] to end[0]; j <- start[1] to end[1]) acc[i][j] = 1
+        case 8 -> for (i <- start[0] to end[0]; j <- start[1] to end[1]) acc[i][j] = 0;
+        acc
+    )) from ((0 .* 1000) .* 1000) map count(== 1) then sum
+);
+d6b := \inp -> (
+    lines(inp) fold (\acc, l -> (
+        end, _, start, inst := l rsplit " " by 4;
+        start .= (_ split ",") >>> map(int);
+        end .= (_ split ",") >>> map(int);
+        switch (len(inst)) 
+        case 6 -> for (i <- start[0] to end[0]; j <- start[1] to end[1]) acc[i][j] += 2
+        case 7 -> for (i <- start[0] to end[0]; j <- start[1] to end[1]) acc[i][j] += 1
+        case 8 -> for (i <- start[0] to end[0]; j <- start[1] to end[1]) acc[i][j] = (acc[i][j] - 1) max 0;
+        acc
+    )) from ((0 .* 1000) .* 1000) map sum then sum
+);
