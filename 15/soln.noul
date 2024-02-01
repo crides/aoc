@@ -78,3 +78,7 @@ d7b := \inp -> (
 
 d8a := \inp -> sum(lines(inp) map \l -> len(l) - len(list(eval(l))));
 d8b := \inp -> sum(lines(inp) map \l -> 2 + (l count in('\\"')));
+
+d10p := \s -> s group == map (\i -> str(len(i)) $ i[0]) join "";
+d10a := \inp -> len(1 to 40 fold (\a, _ -> d10p(a)) from inp);
+d10b := \inp -> len(1 to 50 fold (\a, _ -> d10p(a)) from inp);
