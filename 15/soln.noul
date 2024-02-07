@@ -82,3 +82,40 @@ d8b := \inp -> sum(lines(inp) map \l -> 2 + (l count in('\\"')));
 d10p := \s -> s group == map (\i -> str(len(i)) $ i[0]) join "";
 d10a := \inp -> len(1 to 40 fold (\a, _ -> d10p(a)) from inp);
 d10b := \inp -> len(1 to 50 fold (\a, _ -> d10p(a)) from inp);
+
+frombase := \l, b -> sum(0 til len(l) map (b^) zip reverse(l) with *);
+tobase := \n, b -> (
+    l := [];
+    while (n) (
+        l = (n % b) .+ l;
+        n //= b;
+    );
+    l
+);
+
+d11_tod := \s -> s map \d -> ord(d) - 97;
+d11_inc := \s -> ((s frombase 26) + 1) tobase 26;
+d11_pass := \s -> (
+    s window 3 any (\w -> (w pairwise -) == [-1, -1])
+    and [8, 14, 11] all not_in(s)
+    and (
+        c, i := [0, 0];
+        while (i < len(s) - 1) (
+            if (s[i] == s[i+1]) (c += 1; i += 1);
+            i += 1;
+        );
+        c >= 2
+    )
+);
+d11a := \s -> (
+    s .= d11_tod;
+    while (not(d11_pass(s))) s .= d11_inc;
+    ((8 - len(s)) *. 0 ++ s) map (\i -> chr(i + 97)) join ""
+);
+d11b := \s -> (
+    s .= d11_tod >>> d11_inc;
+    while (not(d11_pass(s))) s .= d11_inc;
+    s .= d11_inc;
+    while (not(d11_pass(s))) s .= d11_inc;
+    ((8 - len(s)) *. 0 ++ s) map (\i -> chr(i + 97)) join ""
+);
