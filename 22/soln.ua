@@ -88,3 +88,28 @@ Dks‼ ← /◇×⊏⊸(↙2⍖)⊢⇌⍉⊙◌⍥(
 )^!≡[⊙(□0)]Dkp
 Dka ← Dks‼(⌊÷3)20
 Dkb ← Dks‼(◿/×⊡2⍉λdabcd)10000
+
+Dla ← (
+  ⊓∩(⊢⊚=)(↥0-@a),@E,@S⊜∘⊸≠@\n # end start heights
+  ⊙(⟜⍜⊡⋅0⊙(∵⋅∞.)):⊙⟜⍜⊡⋅25:
+  ⊙◌⊡⊙(
+    ◌⍢(
+      ◴⊂⊙(
+        ⊏⊚≡/↧↧≥0,>,¤△:⊙,⊸+Dirs¤                # bounded dirs, cur steps height
+        ⊏⊚⊙:↧⊓(≥⊓⊡(+1⊡)|<⊓⊡(.+1⊡))λadbdacbcacd # filtered next steps height
+        ⟜⍜⊡↧⊙:
+      ):°⊂
+    )(>0⧻)¤
+  )
+)
+Dlb ← (
+  ⊓(⊢⊚=)(↥0-@a),@E⊜∘⊸≠@\n # end heights
+  ¤⟜⍜⊡⋅0⊙⊸∵⋅∞⟜⍜⊡⋅25
+  /↧♭⊡⊚=0:◌⍢(
+    ◴⊂⊙(
+      ⊏⊚≡/↧↧≥0,>,¤△:⊙,⊸+Dirs¤                # bounded dirs, cur steps height
+      ⊏⊚⊙:↧⊓(≤⊓⊡(-1⊡)|<⊓⊡(.+1⊡))λadbdacbcacd # filtered next steps height
+      ⟜⍜⊡↧⊙:
+    ):°⊂
+  )(>0⧻)
+)
