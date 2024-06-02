@@ -113,3 +113,12 @@ Dlb ← (
     ):°⊂
   )(>0⧻)
 )
+
+Dmcmp ← |2 ⟨
+  ±-
+| Dmcmp⊙¤
+| Dmcmp¤
+| ⟨±-∩⧻|⟨Dmcmp◌|⊙⋅◌⟩⊸≠0Dmcmp⊙:∩°⊂⟩↧∩(>0⧻),,
+⟩°⋯>0⊟∩(⧻△),,∩°□
+Dma ← /++1⊚⊜(=¯1Dmcmp:°⊟⊜(□°json)⊸≠@\n)⊸(¬⦷)"\n\n"
+Dmb ← ×+1∩(+1/+=¯1≡Dmcmp)¤¤¤6,¤¤¤2⊜(□°json)⊸≠@\n # final +1 due to [[2]] < [[6]] unaccounted for
