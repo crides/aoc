@@ -122,3 +122,59 @@ Dmcmp ← |2 ⟨
 ⟩°⋯>0⊟∩(⧻△),,∩°□
 Dma ← /++1⊚⊜(=¯1Dmcmp:°⊟⊜(□°json)⊸≠@\n)⊸(¬⦷)"\n\n"
 Dmb ← ×+1∩(+1/+=¯1≡Dmcmp)¤¤¤6,¤¤¤2⊜(□°json)⊸≠@\n # final +1 due to [[2]] < [[6]] unaccounted for
+
+Dnp ← (
+  ◴/◇⊂⊜(
+    ⊜(⊟∩⋕:°$"_,_")⊸(¬⦷)" -> "
+    □∧(⊂+¤⟜(☇1⇡+1-)°⊟⊏⊸(⍏≡/+))⊙[]◫2
+  )⊸≠@\n
+)
+DnDraw ← &ims ∵⟨0_0_0|1_0_0|1_1_1⟩
+Dna ← (
+  °⊚⍜(⊢⇌⍉)(-,⟜/↧)Dnp
+  ↻¯±⟜⬚0↙+2⊸△
+  1⊙(⊟0+1-:500)
+  /+=2♭⟜DnDraw ⋅⊙◌⍢(
+    λcabc # ? cur outer map orig
+    ◌⍢(|3.3
+      ⟨
+        # ? cur outer map | orig
+        +⊙(¤.)≡⊟1 0_¯1_1
+        # ? nexts cur outer map | orig
+        :⟜(⊗0⊡)λadbcd
+        # ? ind nexts pos outer map | orig
+        ⟨λacd⊡|[]:⍜⊡⋅2λced⟩⊸=3
+        | []0λc
+      ⟩=⊓⊢(-1⧻)λacabc
+    )(>0⧻)
+  )(∘)
+)
+DnDrawb ← (
+  ⍜(⊢⇌⍉)(-⊸/↧)°map
+  ∩(°□)°⊟⊜□:
+  ⬚0+∩(°⊚)⊂,
+  ↻¯±⟜⬚0↙+2⊸△
+  DnDraw
+)
+Dnb ← (
+  1⊙(+1/↥⊢⍉)map⟜≡⋅1.Dnp
+  # ? loop map bottom
+  /+=2⟜DnDrawb⋅⊙◌⍢(
+    0_500 # ? cur outer map bottom
+    ≠0⬚0getλacabc
+    ⟨
+      ◌⍢(|4.4
+        ⟨
+          # ? cur outer map | bottom
+          +⊙(¤.)≡⊟1 0_¯1_1
+          # ? nexts cur outer map | bottom
+          :⟜(⊗0≡⬚0get)⊙¤λadbcd
+          # ? ind nexts pos outer map | bottom
+          ⟨λacd⊡|[]:insert⊙2λced⟩⊸=3
+            | []1insert⊙⋅2 # hit bottom
+        ⟩=⊢λadabcd
+      )(>0⧻)
+    | ⋅⋅0
+    ⟩
+  )(∘)
+)
