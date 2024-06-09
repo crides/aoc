@@ -187,5 +187,17 @@ DoFind ← (
   ∧(⍣(⍜⊡(⊟⊃/↧/↥⊂)⊙:⊢|⊂:¤◌)⊚≥⊢,⊢⇌⍉,)
 )
 Doa ← +/+≡/-DoFind ⊙⊙⊙(¯/+=⊢⇌⍉◴) λabcca 2000000 Dop # 10
-# Dob ← +×4000000∩⊏?⟜:⊢⊚=2?≡(λbca⟜(⊃⧻(⊢⇌⊢)DoFind))⇡20∩¤Dop # test
-Dob ← +×⟜(∩⊏⟜:⊢⊚=2≡(λbca⟜(⊃⧻(⊢⇌⊢)DoFind))⇡)4000000∩¤Dop # real
+# Same thing as https://www.reddit.com/r/adventofcode/comments/zmfwg1/comment/j0cvuq5/
+Dob ← (
+  ⊙(¤⊙[])⇡⊸⧻⍉⊟ℂ°⊟⍉⟜(/+⍉⌵-)Dop
+  ∧(
+    ⁅+⊙(♭⊞×ⁿ⇡4iℂ⟜-⊸⇡+1◌°ℂ)°⊟°⊂↻ # ? edge sensors
+    ▽⊸(↧∩/↧≥0⟜(≤4e6)⊟°ℂ)        # bound by map
+    ⊂∧(▽>:⁅+∩⌵°ℂ-⊙,)⊙(◌°ℂ)°⊟⍉:  # contain in sensors
+  )
+  +×4e6°ℂ°¤◴
+)
+# Dob ← ( # Roughly some ideas from the same thread. no idea how this works
+#   ⁅∧(⊂+⊙(♭⊞×ⁿ⇡4iℂ⟜-⊸⇡))⊙⊙[]ℂ°⊟⍉⟜(+1/+⍉⌵-)Dop # all edges
+#   +×4e6°ℂ⊢▽=⟜(▽=1°▽⊏⊸⍏)°▽⊏⊸⍏                 # ???
+# )
