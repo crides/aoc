@@ -211,3 +211,12 @@ Drb ← (
   ¬⊙◌⍥(↧¬,/↥⊂⟜(≡⬚0↻SixDir)¤)∞    # flood
   /+ThreeDir!(/+♭=1⍜⍉/+◫2)       # edge detect
 )
+
+Dygits ← "=-012"
+DyNorm ← /+×ⁿ:5⇡⊸⧻-2⊗:Dygits⇌
+DySnafu ← (
+  /+⬚0≡(⊂⊚)⇡⊸⧻[◌⍢(:⊟⟜(-×5)⊸>2⊃◿(⌊÷)5)±] # mod and join
+  ▽⊸(≠1⦷0)⍜(+2⇌)(◌∧(⊃≥(⊂:◿)5+)⊙(0[]))   # carry and strip leading
+  ⊏+2:Dygits
+)
+Dya ← DySnafu/+⊜DyNorm⊸≠@\n
