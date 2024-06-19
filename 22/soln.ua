@@ -212,6 +212,43 @@ Drb ← (
   /+ThreeDir!(/+♭=1⍜⍉/+◫2)       # edge detect
 )
 
+Dup ← ⬚[]⊜(insert⊃(↙4|□⍣⋕(⍜⊡◇°¤1⊜□⊸≠@ )↘6):)⊸≠@\n
+DuEv ← |2.2 (
+  get,,
+  =3⊸type°□
+  ⟨
+    ⊙⋅∘
+  | λbaecd⋊ABC
+    :⊙(↥∩(≠0type),,⊙(DuEv:)DuEv)
+    ⟨
+      ⟨+|-:|×|÷:⟩⊗:"+-*/"
+    | □{◇⊙⊙∘}:
+    ⟩
+    ⊙⍜get◌λacba
+  ⟩
+)
+Dua ← ⊙◌DuEv"root"Dup
+Dub ← (
+  ⊙(⊙◌DuEv:)DuEv⊙:◇⋊AC⊸get"root"⍜get◌,⊙"humn"Dup
+  ◌⍢(
+    :⊙(:⍥⊙:.=0⊸type)⋊BAC # ? expr op left-is-num? a b
+    ⊙(
+      ⟨
+        -◌ # x + a = b | a + x = b
+        | ⟨
+            +  # x - a = b
+          | -: # a - x = b
+          ⟩
+        | ÷◌ # x * a = b | a * x = b
+        | ⟨
+            ×  # x / a = b
+          | ÷: # a / x = b
+          ⟩
+      ⟩⊗:"+-*/"
+    )
+  )(¬≍"humn")°□
+)
+
 Dygits ← "=-012"
 DyNorm ← /+×ⁿ:5⇡⊸⧻-2⊗:Dygits⇌
 DySnafu ← (
