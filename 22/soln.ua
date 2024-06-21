@@ -212,6 +212,12 @@ Drb ← (
   /+ThreeDir!(/+♭=1⍜⍉/+◫2)       # edge detect
 )
 
+Dtp ← ⊜⋕⊸≠@\n
+DtMix! ← ⊢⇌⍉∧(⍜↻(⍜↻(⊂:)⊙(:¤)⊢⇌.°⊂)⊢⊚=⊢⍉,)^!⟜(⍉⊟)⇡⊸⧻
+DtExt ← /+⊏◿⧻,+×1000+1⇡3⊢⊚⊸=0
+Dta ← DtExt DtMix!∘Dtp
+Dtb ← DtExt DtMix!(♭↯10)×811589153Dtp
+
 Dup ← ⬚[]⊜(insert⊃(↙4|□⍣⋕(⍜⊡◇°¤1⊜□⊸≠@ )↘6):)⊸≠@\n
 DuEv ← |2.2 (
   get,,
