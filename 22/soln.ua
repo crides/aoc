@@ -145,7 +145,7 @@ Dna ← (
         :⟜(⊗0⊡)λadbcd
         # ? ind nexts pos outer map | orig
         ⨬(λacd⊡|[]:⍜⊡⋅2λced)⊸=3
-        | []0λc
+      | []0λc
       )=⊓⊢(-1⧻)λacabc
     )(>0⧻)
   )(∘)
@@ -172,7 +172,7 @@ Dnb ← (
           :⟜(⊗0≡⬚0get)⊙¤λadbcd
           # ? ind nexts pos outer map | bottom
           ⨬(λacd⊡|[]:insert⊙2λced)⊸=3
-            |
+        |
           []1insert⊙⋅2 # hit bottom
         )=⊢λadabcd
       )(>0⧻)
@@ -256,6 +256,26 @@ Dub ← (
     )
   )(¬≍"humn")°□
 )
+
+Dwp ← ⊚=@#⊜∘⊸≠@\n
+DwNei ← ▽⋯495☇1⊞⊟.-1⇡3
+# DwDraw ← &ims°⊚-¤≡/↧⊸⍉.⸮
+DwDraw ← &p⊂"\n"/$"_\n_"⊏:".#"°⊚.⸮
+DwRound ← (
+  ⍜▽(
+    ≡(+⊙¤≡⊟⨬(:|)⊙0:-1⇡3⊢⊚⊸=0), # ? try-dirs poses
+    ⊙(,⊸(¤¤¤map⟜(⊚⧻)))         # ? try-dirs poses pos-set poses
+    ≡≡≡has⊞+⊙≡¤                # ? has-nei[dir pos opts] poses
+    ≡(⬚4⊢⊚)¬/↥⮌2_1             # ? dir-inds[pos] poses | dirs
+    ⊸+⊏⊙(⊂:¤0_0,)              # ? props poses
+    ⊓⊏∩⊏λabacad⍏.⊸⊛            # ? inds props poses
+    ¬⊸⬚[]⊕(⊂⊙(⨬[1]⊚⊸>1⧻))      # ? dupped? props poses
+    ≡(⊡⊙⊟)
+  )≡/↥⊸(≡≡has⊙(¤¤map⟜(⊚⧻)))⤚⊞+:DwNei
+  ⊙(↻1)
+)
+Dwa ← -⧻⟜(/×≡(+1-⊃/↧/↥)⍉)⊙◌⍥DwRound10:[¯1_0 1_0 0_¯1 0_1] Dwp
+Dwb ← ◌◌⍥(⊙⊙(+1)DwRound)∞⊙⊙0:[¯1_0 1_0 0_¯1 0_1] Dwp
 
 Dygits ← "=-012"
 DyNorm ← /+×ⁿ:5⇡⊸⧻-2⊗:Dygits⇌
