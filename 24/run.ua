@@ -1,4 +1,4 @@
-# vim: set guifont=Uiua386\:h24:
+#!/usr/bin/env -S uiua run
 # Experimental!
 ┌─╴Args
   |Run {Day Part}
@@ -7,6 +7,7 @@
   |VerifyDay {Day}
   |VerifyAll
   |Input {Day}
+  |Cookie
 └─╴
 Usage ↚ (
   ..⊢&args
@@ -27,6 +28,7 @@ Parse ↚ ⍣(
       )⊸⧻
     )⍣°"verify"°"v"
   | ⍩(Args~Input ParseDay°□₁)⍣°"input"°"i"
+  | ⍩(Args~Cookie°{})⍣°"cookie"°"c"
   | ⍤$"Unknown subcommand: _"⊙0
   )
 | 0⍤Usage0&p$"Error: _")
@@ -51,8 +53,16 @@ FmtNRun ← (
   )
 )
 
+Sql ~ "git: github.com/uiua-lang/uiqlite"
+Cookie ← (
+  Sql~Open $"_/.local/share/qutebrowser/webengine/Cookies" &var"HOME"
+  Sql~Prepare "select * from cookies where host_key like '%adventofcode%' and name = 'session';"
+  ◇Sql~Close⊣⟜(°□⊡4°¤Sql~QueryValues)
+)
+
 Solns ← {
   {1223326 21070419}
+  {686 717}
 }
 # ? day part
 CheckSoln ↚ (
@@ -69,10 +79,8 @@ CheckSoln ↚ (
 Exec ↚ ⍣(
   °Args~Input
   ⍩(&fwa⊃(
-      $"in_"
-    | ⊙("\r\n\r\n"
-        ▽⊸≠@\n&fras$"_/.adventofcode.session"&var"HOME"
-      )
+      $"i_"
+    | ⊙(Cookie "\r\n\r\n")
       $$ GET /2024/day/_/input HTTP/1.0
       $$ Cookie: session=_
       $$ Host: adventofcode.com_
@@ -84,6 +92,8 @@ Exec ↚ ⍣(
 | ⍩(CheckSoln)°Args~Verify
 | ⍩(≡CheckSoln⊙"ab")°Args~VerifyDay
 | ⍩(⊞CheckSoln+1⇡25"ab")°Args~VerifyAll
+| ⍩(&pCookie)°Args~Cookie
 )
 
 Exec Parse
+# vim: set guifont=Uiua386\:h24:
