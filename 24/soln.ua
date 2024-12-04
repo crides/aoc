@@ -18,3 +18,14 @@
   A ← /+≡(◇×∩⋕°⊟↘1)regex$ mul\((\d+),(\d+)\)
   B ← A▽⊸(⬚1\(⨬(⊙◌|⋅∘)±,)+⊙×₂∩⌕"do()","don't()")
 └─╴
+
+┌─╴D₄
+  Search ← /+≡(+∩(/+⌕)⇌,,"XMAS")
+  Diag   ← ≡↻¯°⊏≡⊂⟜(¤▽:@\s-1⧻)
+  A      ← /+[⊃(Search⍉Diag|Search⍉⍜⇌Diag|Search|Search⍉)]⊜∘⊸≠@\n
+  B ← (
+    ⊃(Diag|⍜⇌Diag)⊜∘⊸≠@\n
+    ∩(⍜⍉(∨∩(↻¯1⌕)⇌,,"MAS"))
+    /+♭×⊓(≡↻₂≡↻°⊏|⍜⇌(≡↻°⊏)) # ↻2 is.. probably due to the ⇌, but is added by experiment
+  )
+└─╴
