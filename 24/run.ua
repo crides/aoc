@@ -8,17 +8,19 @@
   |VerifyAll
   |Input {Day}
   |Cookie
+  |Submit {Day Part Answer}
 └─╴
 Usage ↚ (
-  ..⊢&args
+  ...⊢&args
   $$ Usage: _ ( test | run ) <day> (a | b)
+  $$        _ submit <day> (a | b) [ answer ]
   $$        _ verify [ <day> [ a | b ] ]
   $$        _ input <day>
 )
 ParseDay   ↚ ⍤$"<day> _ needs to be a number ∊ [1, 25]"⟜(⊸(↧⊃≥₁≤₂₅)⋕)
 ParsePart  ↚ ⍤$"<part> _ can only be 'a' or 'b'"⟜⊸(↥∩≍"a","b")
 Parse ↚ ⍣(
-  ⍤Usage ↧⊃≥₂≤₄⧻&args
+  ⍤Usage ↧⊃≥₂≤₅⧻&args
   °□°⊂↘1&args
   ⍣(⍩(Args~Run⊓(ParseDay|ParsePart)°□₂)⍣°"run"°"r"
   | ⍩(Args~Test⊓(ParseDay|ParsePart)°□₂)⍣°"test"°"t"
@@ -29,6 +31,7 @@ Parse ↚ ⍣(
     )⍣°"verify"°"v"
   | ⍩(Args~Input ParseDay°□₁)⍣°"input"°"i"
   | ⍩(Args~Cookie°{})⍣°"cookie"°"c"
+  | ⍩(Args~Submit⊃(⊓(ParseDay|ParsePart)°□₂↙2|⨬(°□⊣|⋅NaN)⊸(=2⧻)))⍣°"submit"°"s"
   | ⍤$"Unknown subcommand: _"⊙0
   )
 | 0⍤Usage0&p$"Error: _")
@@ -58,6 +61,29 @@ Cookie ← (
   Sql~Open $"_/.local/share/qutebrowser/webengine/Cookies" &var"HOME"
   Sql~Prepare "select * from cookies where host_key like '%adventofcode%' and name = 'session';"
   ◇Sql~Close⊣⟜(°□⊡4°¤Sql~QueryValues)
+)
+
+# html ? day part ans
+Submit ← (
+  ⊙(Cookie ⊸⧻$"level=_&answer=_" -@`°¤)
+  $$ POST /2024/day/_/answer HTTP/1.1
+  $$ Accept: */*
+  $$ Accept-Encoding: gzip
+  $$ Cookie: session=_
+  $$ Content-Type: application/x-www-form-urlencoded
+  $$ Content-Length: _
+  $$ Host: adventofcode.com
+  $$ User-Agent: uiua 0.14.0
+  $$
+  $$ _
+  ⍜⊜□(≡⋅"\r\n")×⟜\+⊸=@\n
+  ⍜&tlsc(
+    °$"_\r\n_"⊸&ru"\r\n\r\n"⊸&w:
+    ⍤⋅⊃($"_ _"|≍"200")°$"HTTP/_ _ _"
+    ⋕°□₁▽=□"content-length"⊜(∩□¯⌵°$"_: _")¬⊸⦷"\r\n"↘¯4
+    ⨬(⋅""|⍜&runs(⊙◌&rs∞&cl⊸&w⤙⊙⊙⊙◌){"gunzip" "-c" "-"}&rb)⊸±
+  ) "adventofcode.com:443"
+  ⊣°¤regex"(?s)<main>(.*)</main>"
 )
 
 Solns ← {
@@ -97,6 +123,7 @@ Exec ↚ ⍣(
 | ⍩(≡CheckSoln⊙"ab")°Args~VerifyDay
 | ⍩(⊞CheckSoln+1⇡25"ab")°Args~VerifyAll
 | ⍩(&pCookie)°Args~Cookie
+| ⍩(&pSubmit ⊃(⊙∘|⨬(⋅⋅∘|⊙◌FmtNRun0 1)⊃(≍NaN⋅◌|⊙⊙∘)))°Args~Submit
 )
 
 Exec Parse
