@@ -65,6 +65,7 @@ Cookie ← (
 
 # html ? day part ans
 Submit ← (
+  ◡(&p$"Submitting for day _ part _: _")
   ⊙(Cookie ⊸⧻$"level=_&answer=_" -@`°¤)
   $$ POST /2024/day/_/answer HTTP/1.1
   $$ Accept: */*
