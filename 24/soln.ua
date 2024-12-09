@@ -70,3 +70,27 @@
     ⧻◴▽:⟜(≡/××⊃≥₀>)
   )
 └─╴
+
+┌─╴D₉
+  Show ← &p⊏:".0123456789"+1▽:°⊟⍉
+  P    ← °⊟⍉-@0↯∞_2⊂:@0▽⊸≠@\n
+  A ← (
+    /◇⊂♭⍉:⊙⊟⊓(⊃(/+|⍚▽:°⊏)|⍚▽:¯1)P
+    ⊙◌⍢(▽⊸(⍜⇌\↥≠¯1)⍜⊏◌⊙(⊃↘↙¯1)⊸(⊢⊚⌕¯1))(≠⧻)
+    /+×°⊏
+  )
+  B ← (
+    ▽⊸(≠0⊣⍉)♭₂⤸1⊟⊓(⍉⊟°⊏|⍉⊂¯1¤)P
+    ∧(⊃(⊣⊏⊙⋅∘|⊙⊙∘)⊃(⊢⊚=⊙(⊢⍉)|⊙∘)  # file-size file-ind file-id fs ? file-id fs
+      ⊃(⬚¯1⊢⊚×⊓=₋₁≤°⊟⍉:⊙⋅⋅∘|⊙⊙⊙∘) # space-ind file-size file-ind file-id fs ? file-size file-ind file-id fs
+      ⊃(⊙⋅⊙⋅∘|⋅⊙⋅∘)               # space-ind file-ind fs file-size file-id
+      ⨬((⊙(⍜(⊢⊏)⋅¯1)              # space-ind fs space-size file-size file-id ? space-ind file-ind fs space-size file-size file-id
+         (⍜⊏(?⊟⊙(⊟¯1)⊟?:⊙:⟜-:?⊣)) # fs ? space-ind fs file-size file-id
+        )
+      | ⋅⋅⊙⋅◌
+      )∨◡⊃(<|=¯1)
+      ⍉⊟:°▽▽:°⊟⍉
+    )⊸(⇌+1⇡/↥⊢⍉)
+    /+▽≠¯1⤙×°⊏▽:°⊟⍉
+  )
+└─╴
