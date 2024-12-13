@@ -40,13 +40,12 @@ SoftAssert ← (⨬(&p|◌):)
 FmtNRun ← (
   ⊃(⊙⋅⊙∘|⋅∘)
   ◌&runi{"uiua" "fmt" "soln.ua"}
-  ⊃(⟜$"_~_"$"D_"+8272⊓°⋕⌵◌
+  ⊃(⟜$"_~_"$"D\_\__"⋅⊙⌵
   | ⨬(◌|⊙◌)⊸&fe⟜⊂$"__"⨬@i@t
   )
-  $$ # Experimental!
   $$ ~ "soln.ua" ~ _
   $$ _ &fras "_"
-  :⊂{"uiua" "eval"}□
+  :⊂{"uiua" "eval" "--experimental"}□
   ⨬(&runi
   | ⊙⊙◌&runc
     # last char assumed to be '\n'; get last line to get rid of warnings
@@ -97,7 +96,9 @@ Solns ← {{1223326 21070419}
          {361 1249}
          {6385338159127 6415163624282}
          {468 966}
-         {213625 252442982856820}}
+         {213625 252442982856820}
+         {1402182}
+         {38839 75200131617108}}
 # ? day part
 CheckSoln ↚ (
   ◡(&p$"checking for day _ part _")
