@@ -2,7 +2,7 @@
 # Experimental!
 ┌─╴Args
   |Run {Day Part}
-  |Test {Day Part}
+  |Test {Day Part File}
   |Verify {Day Part}
   |VerifyDay {Day}
   |VerifyAll
@@ -11,8 +11,9 @@
   |Submit {Day Part Answer}
 └─╴
 Usage ↚ (
-  ...⊢&args
-  $$ Usage: _ ( test | run ) <day> (a | b)
+  ....⊢&args
+  $$ Usage: _ run <day> (a | b)
+  $$        _ test <day> (a | b) [ file ]
   $$        _ submit <day> (a | b) [ answer ]
   $$        _ verify [ <day> [ a | b ] ]
   $$        _ input <day>
@@ -23,7 +24,7 @@ Parse ↚ ⍣(
   ⍤Usage ↧⊃≥₂≤₅⧻&args
   °□°⊂↘1&args
   ⍣(⍩(Args~Run⊓(ParseDay|ParsePart)°□₂)⍣°"run"°"r"
-  | ⍩(Args~Test⊓(ParseDay|ParsePart)°□₂)⍣°"test"°"t"
+  | ⍩(Args~Test⊓(⊓(ParseDay|ParsePart)°□₂|°□⬚""⊢)⊃↙↘2)⍣°"test"°"t"
   | ⍩(⨬(Args~VerifyAll°{}
       | Args~VerifyDay ParseDay°□₁
       | Args~Verify⊓(ParseDay|ParsePart)°□₂
@@ -36,12 +37,12 @@ Parse ↚ ⍣(
   )
 | 0⍤Usage0&p$"Error: _")
 SoftAssert ← (⨬(&p|◌):)
-# ? test capture day part
+# ? test/file capture day part
 FmtNRun ← (
   ⊃(⊙⋅⊙∘|⋅∘)
   ◌&runi{"uiua" "fmt" "soln.ua"}
   ⊃(⟜$"_~_"$"D\_\__"⋅⊙⌵
-  | ⨬(◌|⊙◌)⊸&fe⟜⊂$"__"⨬@i@t
+  | ⨬(⨬(◌|⊙◌)⊸&fe⟜⊂$"__"⨬@i@t|∘)⊸type
   )
   $$ ~ "soln.ua" ~ _
   $$ _ &fras "_"
@@ -100,7 +101,8 @@ Solns ← {{1223326 21070419}
          {1402182 858684}
          {38839 75200131617108}
          {230435667 7709}
-         {1349898}}
+         {1349898}
+         {85480 518}}
 # ? day part
 CheckSoln ↚ (
   ◡(&p$"checking for day _ part _")
@@ -125,7 +127,7 @@ Exec ↚ ⍣(
       ⍤:≍"200"°□⊏1⊜□⊸≠@ °□⊢⊜□⊸≠@\n ⊙:°□₂⊜□⊸(¬⦷)"\r\n\r\n".
     ))
 | ⍩(◌FmtNRun 0 0)°Args~Run
-| ⍩(◌FmtNRun 1 0)°Args~Test
+| ⍩(◌FmtNRun ⍣(1°"")∘⤙⊙⊙⊙◌0)°Args~Test
 | ⍩(CheckSoln)°Args~Verify
 | ⍩(≡CheckSoln⊙"ab")°Args~VerifyDay
 | ⍩(⊞CheckSoln+1⇡25"ab")°Args~VerifyAll
