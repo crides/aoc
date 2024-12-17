@@ -37,7 +37,7 @@ Parse ↚ ⍣(
   )
 | 0⍤Usage0&p$"Error: _")
 SoftAssert ← (⨬(&p|◌):)
-# ? test/file capture day part
+# out ? test/file capture day part
 FmtNRun ← (
   ⊃(⊙⋅⊙∘|⋅∘)
   ◌&runi{"uiua" "fmt" "soln.ua"}
@@ -53,6 +53,7 @@ FmtNRun ← (
     ⨬(|1 0SoftAssert"Error when running"0&p
     | °□⊣⊜□⊸≠@\n⍜⇌↘₁
     )=0
+    ⍥(⍜⇌↘₁↘1)⊸(=@"⊢) # answer is (probably) string, lazily strip quotes
   )
 )
 
@@ -102,16 +103,14 @@ Solns ← {{1223326 21070419}
          {38839 75200131617108}
          {230435667 7709}
          {1349898}
-         {85480 518}}
+         {85480 518}
+         {"1,0,2,0,5,7,2,1,3" 265652340990875}}
 # ? day part
 CheckSoln ↚ (
   ◡(&p$"checking for day _ part _")
   ◡(°□⬚NaN⊡⊙(°□⬚[]⊡|Solns):⊓(-1|-@a))
   ⨬(SoftAssert$"Day _ part _: Expected: _; got: _"◌◠(
-      ◠≍⍣(
-        ⊓°⋕∘
-      | ⊙(⍜⇌↘₁↘1) # answer is (probably) string, lazily strip quotes
-      )⊙(FmtNRun 0 1))
+      ◠≍⍣⊙⋕∘⊙(FmtNRun 0 1))
   | SoftAssert:0$"No answer for day _ part _"◌
   )⊸≍NaN
 )
