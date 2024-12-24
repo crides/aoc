@@ -109,7 +109,8 @@ Solns ← {{1223326 21070419}
          {324 575227823167869}
          {}
          {}
-         {17724064040 1998}}
+         {17724064040 1998}
+         {1075 "az,cg,ei,hz,jc,km,kt,mv,sv,sx,wc,wq,xy"}}
 # ? day part
 CheckSoln ↚ (
   ◡(&p$"checking for day _ part _")
