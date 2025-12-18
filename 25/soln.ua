@@ -114,20 +114,24 @@
 ┌─╴D₁₁
   P ← map⊜(∩□⊙(°/$"_ _")°$"_: _")⊸≠@\n
   A ← ⊙◌⧻path(˜↯0⊸⧻°□get|≍□"out")□"you"P
-  B ← (
-    {"svr"}⊸(insert"out"0_0_0_0insert"svr"1_0_0_0⍜°map⊙≡₀⋅0_0_0_0)P # frontier nodes[none fft dac both] graph
+  Exp‼ ← (
+    {^0}⊸(insert^1 0insert^0 1insert"out"0⍜°map⊙≡₀⋅0) # frontier nodes[none fft dac both] graph
     ⍢(⊸(▽⊸≠□"out"◴⊂⊃(
           ⋅∘
-        | ⊙⊙◌⟜∧⊸(⍜get+)⊃(
+        | ⊙⊙◌⟜∧⊸(⍜get+?₂)⊃(
             °□get⊙⋅⋅∘
           | ⤙(
-              ⟜get
-              ⍥⊙(⍜(°⊟⊏)(0+)0_2⍜(°⊟⊏)(0+)1_3)⊸(=□"dac")
-              ◌⍥⊙(⍜(°⊟↙)(0+)2⍜(°⊟↘)(0+)2)⊸(=□"fft")
+              get
             )⊙⋅⊙◌)
         )
       )°⊂
     | ±⧻)
-    ⊣get"out"?⋅⊙◌
+    get^1⋅⊙◌
+  )
+  B ← (
+    +⊃(
+      /×⊃[Exp‼("svr"|"fft")|Exp‼("fft"|"dac")|Exp‼("dac"|"out")]
+    | /×⊃[Exp‼("svr"|"dac")|Exp‼("dac"|"fft")|Exp‼("fft"|"out")]
+    ) P
   )
 └─╴
