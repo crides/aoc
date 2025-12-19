@@ -114,10 +114,44 @@
 ┌─╴D₁₁
   P ← map⊜(∩□⊙(°/$"_ _")°$"_: _")⊸≠@\n
   A ← ⊙◌⧻path(˜↯0⊸⧻°□get|≍□"out")□"you"P
+  ExpDepth ← (
+    {"svr"}⊸(insert"out"0⍜°map⊙≡₀⋅0)
+    ⍢(⊸(▽⊸≠□"out"◴⊂⊃(
+          ⋅∘
+        | ⊙⊙◌⟜∧⊸(⍜get↥)⊃(°□get⊙⋅⋅∘|⤙(+1get)⊙⋅⊙◌)
+        )
+      )°⊂
+    | ±⧻)
+    ⋅⊙◌
+  )
+  Exp‼ ← (
+    ⊓(˜⊏⊙⍏°mapremove"out")⊸(insert^1 0insert^0 1insert"out"0⍜°map⊙≡₀⋅0)
+    ∧⊸(⊙◌∧⊸(⍜get+)⊃(°□get⊙⋅∘|⤙get⊙⊙◌))
+    get^1⊙◌
+  )
   Exp ← |3 memo(
     ⨬(⨬(/+≡⌟₂Exp⊃(°□get⊙⋅∘|⋅⊙∘)|0)⊸=□"out"|1)◡=
   )
+  Expr ← |3 memo(
+    ⨬(⨬(/+≡Expr⊃(¤|°□get⋅⊙∘|¤⋅⋅∘)|0)◡⋅(=□"svr")|1)◡=
+  )
+  ExpO ← (
+    ⊓(˜⊏⊙⍏°mapremove"out")⊸(insert"out"0_0_0_0insert"svr"1_0_0_0⍜°map⊙≡₀⋅0_0_0_0) # frontier nodes[none fft dac both] graph
+    ∧⊸(⊙◌∧⊸(⍜get+)⊃(°□get⊙⋅∘|⤙(
+          ⟜get
+          ⍥⊙(⍜⊏⇌1_3)⊸(=□"dac")
+          ◌⍥⊙(⍜↙⇌2)⊸(=□"fft") # due to property of the graph; orig below
+          # ⍥⊙(⍜(°⊟⊏)(0+)0_2⍜(°⊟⊏)(0+)1_3)⊸(=□"dac")
+          # ◌⍥⊙(⍜(°⊟↙)(0+)2⍜(°⊟↘)(0+)2)⊸(=□"fft")
+        )⊙⊙◌))
+    ⊣get"out"⊙◌
+  )
   B ← (
-    /×⊃[Exp□"svr"□"fft"|Exp□"fft"□"dac"|Exp□"dac"□"out"]P
+    ⊃($Recur /×⊃[Exp□"svr"□"fft"|Exp□"fft"□"dac"|Exp□"dac"□"out"]
+    | map⊕(⊓⊢□)⊸⊛°⊟⇌⍉∧(⊂≡⌞⊟⊙°□)⊙⊙[]°map
+      $RecurBack /×⊃[Expr□"svr"□"fft"|Expr□"fft"□"dac"|Expr□"dac"□"out"]
+    | $DpMul /×⊃[Exp‼("svr"|"fft")|Exp‼("fft"|"dac")|Exp‼("dac"|"out")]⊸ExpDepth
+    | $DpOrig ExpO⊸ExpDepth
+    )P
   )
 └─╴
